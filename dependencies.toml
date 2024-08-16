@@ -1,0 +1,94 @@
+[versions]
+armeria = "1.29.4"
+spring-boot = "3.3.2"
+spring-dependency-management = "1.1.6"
+kafka = "3.7.0"
+kotlin = "1.9.23"
+kotlin-coroutine = "1.8.1"
+ktlint-gradle-plugin = "12.1.1"
+bouncycastle = "1.78.1"
+lombok = "1.18.34"
+micrometer = "1.13.0"
+netty = "4.1.110.Final"
+resilience4j = "2.2.0"
+
+[libraries.boms-armeria]
+module = "com.linecorp.armeria:armeria-bom"
+version.ref = "armeria"
+
+[libraries.boms-micrometer]
+module = "io.micrometer:micrometer-bom"
+version.ref = "micrometer"
+
+[libraries.boms-netty]
+module = "io.netty:netty-bom"
+version.ref = "netty"
+
+[libraries.boms-resilience4j]
+module = "io.github.resilience4j:resilience4j-bom"
+version.ref = "resilience4j"
+
+[libraries.armeria-spring-boot3-starter]
+module = "com.linecorp.armeria:armeria-spring-boot3-starter"
+version.ref = "armeria"
+
+[libraries.armeria-spring-boot3-actuator-starter]
+module = "com.linecorp.armeria:armeria-spring-boot3-actuator-starter"
+version.ref = "armeria"
+
+[libraries.spring-boot-starter-security]
+module = "org.springframework.boot:spring-boot-starter-security"
+version.ref = "spring-boot"
+
+[libraries.spring-boot-configuration-processor]
+module = "org.springframework.boot:spring-boot-configuration-processor"
+version.ref = "spring-boot"
+
+[libraries.spring-boot-starter-validation]
+module = "org.springframework.boot:spring-boot-starter-validation"
+version.ref = "spring-boot"
+
+[libraries.spring-boot-starter-data-mongodb]
+module = "org.springframework.boot:spring-boot-starter-data-mongodb"
+version.ref = "spring-boot"
+
+[libraries.kafka]
+module = "org.apache.kafka:kafka-clients"
+version.ref = "kafka"
+
+[libraries.kotlin-test]
+module = "org.jetbrains.kotlin:kotlin-test"
+version.ref = "kotlin"
+
+[libraries.kotlin-allopen]
+module = "org.jetbrains.kotlin:kotlin-allopen"
+version.ref = "kotlin"
+
+[libraries.kotlin-coroutines-core]
+module = "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+version.ref = "kotlin-coroutine"
+
+[libraries.kotlin-coroutines-test]
+module = "org.jetbrains.kotlinx:kotlinx-coroutines-test"
+version.ref = "kotlin-coroutine"
+
+[libraries.kotlin-coroutines-debug]
+module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug"
+version.ref = "kotlin-coroutine"
+
+[libraries.bcprov-jdk18on]
+module = "org.bouncycastle:bcprov-jdk18on"
+version.ref = "bouncycastle"
+
+[libraries.lombok]
+module = "org.projectlombok:lombok"
+version.ref = "lombok"
+
+[plugins]
+spring-boot = {id = "org.springframework.boot", version.ref = "spring-boot"}
+spring-dependency-management = {id = "io.spring.dependency-management", version.ref = "spring-dependency-management"}
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle-plugin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
+
