@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="20" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/Authentication-Server" />
-            <option value="$PROJECT_DIR$/File-Server" />
-            <option value="$PROJECT_DIR$/Message-REST-Server" />
-            <option value="$PROJECT_DIR$/Push-Server" />
-            <option value="$PROJECT_DIR$/WebSocket-Server" />
+            <option value="$PROJECT_DIR$/authentication" />
+            <option value="$PROJECT_DIR$/file" />
+            <option value="$PROJECT_DIR$/message-rest" />
+            <option value="$PROJECT_DIR$/message-websocket" />
+            <option value="$PROJECT_DIR$/push" />
+            <option value="$PROJECT_DIR$/shared-armeria" />
+            <option value="$PROJECT_DIR$/shared-spring" />
           </set>
         </option>
       </GradleProjectSettings>
