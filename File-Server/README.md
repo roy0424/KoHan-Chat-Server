@@ -1,2 +1,0 @@
-# KHC-Authentication
-test
