@@ -28,6 +28,10 @@ version.ref = "netty"
 module = "io.github.resilience4j:resilience4j-bom"
 version.ref = "resilience4j"
 
+[libraries.armeria]
+module = "com.linecorp.armeria:armeria"
+version.ref = "armeria"
+
 [libraries.armeria-spring-boot3-starter]
 module = "com.linecorp.armeria:armeria-spring-boot3-starter"
 version.ref = "armeria"

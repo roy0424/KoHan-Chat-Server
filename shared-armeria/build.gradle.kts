@@ -13,6 +13,7 @@ dependencyManagement {
 
 dependencies {
     api(libs.kafka)
+    api(libs.armeria)
 }
 
 fun of(dependency: Provider<MinimalExternalModuleDependency>): String {
