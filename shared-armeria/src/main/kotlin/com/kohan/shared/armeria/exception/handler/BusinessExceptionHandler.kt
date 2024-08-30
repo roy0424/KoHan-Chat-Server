@@ -9,9 +9,12 @@ import com.linecorp.armeria.common.MediaType
 import com.linecorp.armeria.server.ServiceRequestContext
 import com.linecorp.armeria.server.annotation.ExceptionHandlerFunction
 
-class BusinessExceptionHandler : ExceptionHandlerFunction
-{
-    override fun handleException(ctx: ServiceRequestContext, req: HttpRequest, cause: Throwable): HttpResponse {
+class BusinessExceptionHandler : ExceptionHandlerFunction {
+    override fun handleException(
+        ctx: ServiceRequestContext,
+        req: HttpRequest,
+        cause: Throwable,
+    ): HttpResponse {
         val exception = cause as? BusinessException ?: return ExceptionHandlerFunction.fallthrough()
 
         val mapper = ObjectMapper()
