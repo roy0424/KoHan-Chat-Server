@@ -2,13 +2,15 @@ package com.kohan.authentication.util
 
 import com.kohan.authentication.collection.item.TokenInfo
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
 import java.security.SecureRandom
 import java.time.LocalDateTime
 import java.util.Base64
 
+@Component
 class TokenGenerator(
-    @Value("kohan.token.length") private val length: Int,
-    @Value("kohan.token.expiration") private val expiration: Long,
+    @Value("\${kohan.authentication.token.length}") private val length: Int,
+    @Value("\${kohan.authentication.token.expiration}") private val expiration: Long,
 ) {
     fun generate(): TokenInfo {
         val random = SecureRandom()

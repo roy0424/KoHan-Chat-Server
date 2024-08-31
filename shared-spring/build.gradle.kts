@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api(libs.armeria)
+    api(project(":shared-armeria"))
     api(libs.kotlin.allopen)
     api(libs.armeria.spring.boot3.starter)
     api(libs.spring.boot.starter.security)

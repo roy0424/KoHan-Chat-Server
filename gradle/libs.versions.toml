@@ -33,6 +33,10 @@ version.ref = "resilience4j"
 module = "com.linecorp.armeria:armeria"
 version.ref = "armeria"
 
+[libraries.armeria-grpc]
+module = "com.linecorp.armeria:armeria-grpc"
+version.ref = "armeria"
+
 [libraries.armeria-spring-boot3-starter]
 module = "com.linecorp.armeria:armeria-spring-boot3-starter"
 version.ref = "armeria"
@@ -108,4 +112,3 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle-plugin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 kotlin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
-
