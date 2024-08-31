@@ -17,5 +17,5 @@ class UserCollection(
     /** 프로필 이미지 경로 */
     var profileImageUrl: String,
     /** 인증 토큰 정보 */
-    var tokenInfo: TokenInfo,
+    var tokenInfos: MutableList<TokenInfo>,
 ) : BaseCollection()

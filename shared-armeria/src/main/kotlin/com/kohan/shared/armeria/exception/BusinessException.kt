@@ -6,7 +6,7 @@ import java.lang.RuntimeException
 
 class BusinessException(
     val status: HttpStatus,
-    val body: MutableMap<String, String>,
+    val body: Map<String, String>,
 ) : RuntimeException() {
     companion object {
         @Serial
