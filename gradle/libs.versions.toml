@@ -12,6 +12,7 @@ micrometer = "1.13.0"
 netty = "4.1.110.Final"
 resilience4j = "2.2.0"
 
+
 [libraries.boms-armeria]
 module = "com.linecorp.armeria:armeria-bom"
 version.ref = "armeria"
@@ -42,6 +43,10 @@ version.ref = "armeria"
 
 [libraries.spring-boot-starter-security]
 module = "org.springframework.boot:spring-boot-starter-security"
+version.ref = "spring-boot"
+
+[libraries.spring-boot-starter-test]
+module = "org.springframework.boot:spring-boot-starter-test"
 version.ref = "spring-boot"
 
 [libraries.spring-boot-configuration-processor]

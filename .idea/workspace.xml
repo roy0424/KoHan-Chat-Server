@@ -5,10 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a29b909c-0e32-4cbd-9d2a-664262d02400" name="Changes" comment="">
+<<<<<<< Updated upstream
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shared-armeria/src/main/kotlin/com/kohan/shared/armeria/exception/BusinessException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/shared-armeria/src/main/kotlin/com/kohan/shared/armeria/exception/BusinessException.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shared-armeria/src/main/kotlin/com/kohan/shared/armeria/exception/handler/BusinessExceptionHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/shared-armeria/src/main/kotlin/com/kohan/shared/armeria/exception/handler/BusinessExceptionHandler.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shared-spring/src/main/kotlin/com/kohan/shared/spring/exception/handler/ConstraintViolationExceptionHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/shared-spring/src/main/kotlin/com/kohan/shared/spring/exception/handler/ConstraintViolationExceptionHandler.kt" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+>>>>>>> Stashed changes
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,34 +39,15 @@
         <task path="$PROJECT_DIR$/shared-armeria">
           <activation />
         </task>
+<<<<<<< Updated upstream
         <task path="$PROJECT_DIR$">
           <activation />
         </task>
+=======
+>>>>>>> Stashed changes
         <projects_view>
           <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="kohan-chat-server" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="kohan-chat-server" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="kohan-chat-server" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="formatting" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="kohan-chat-server" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="verification" type="c8890929:TasksNode$1" />
-              </path>
-            </expand>
+            <expand />
             <select />
           </tree_state>
         </projects_view>
@@ -79,6 +67,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+<<<<<<< Updated upstream
+=======
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;roy0424&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/roy0424/KoHan-Chat-Server.git&quot;,
+    &quot;accountId&quot;: &quot;aaaa05c7-3b78-4857-b8f2-c8136237bccf&quot;
+  }
+}</component>
+>>>>>>> Stashed changes
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
@@ -93,6 +96,7 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< Updated upstream
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.Build KoHan-Chat-Server.executor": "Run",
@@ -125,8 +129,40 @@
     "run.configurations.included.in.services": "true",
     "settings.editor.selected.configurable": "preferences.sourceCode",
     "vue.rearranger.settings.migration": "true"
+=======
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build KoHan-Chat-Server.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KoHan-Chat-Server [ktlintCheck].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KoHan-Chat-Server [ktlintFormat].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KoHan-Chat-Server:test [bootRun].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KoHan-Chat-Server:test [build].executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;Spring Boot.TestApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;20&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/kyhan/KoHan-Chat-Server&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.importing&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+>>>>>>> Stashed changes
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\git\kohan-chat-server\shared-spring\src\main\resources" />
@@ -300,8 +336,13 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
+<<<<<<< Updated upstream
         <option value="jdk-20.0.2-corretto-20.0.2.1-4caba194b151-5bc9ecd2" />
         <option value="jdk-21.0.2-openjdk-21.0.2-4caba194b151-4f524021" />
+=======
+        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.20224.387" />
+        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-IU-242.20224.387" />
+>>>>>>> Stashed changes
       </set>
     </attachedChunks>
   </component>
@@ -318,12 +359,21 @@
       <workItem from="1724485721528" duration="12445000" />
       <workItem from="1724544561007" duration="86000" />
       <workItem from="1724545320887" duration="6285000" />
+<<<<<<< Updated upstream
       <workItem from="1724912757784" duration="3019000" />
       <workItem from="1725006730484" duration="2893000" />
+=======
+      <workItem from="1725006333103" duration="384000" />
+      <workItem from="1725006737726" duration="1936000" />
+>>>>>>> Stashed changes
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
