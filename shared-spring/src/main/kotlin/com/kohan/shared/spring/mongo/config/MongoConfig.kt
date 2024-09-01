@@ -13,22 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 @Configuration
 @EnableMongoAuditing
 @EnableTransactionManagement
-class MongoConfig(
-    @Value("\${spring.data.mongodb.uri}")
-    private val databaseUrl: String,
-    @Value("\${spring.data.mongodb.database}")
-    private val databaseName: String,
-) {
-    @Bean
-    fun mongoClient(): MongoClient {
-        return MongoClients.create(databaseUrl)
-    }
-
-    @Bean
-    fun mongoTemplate(mongoClient: MongoClient): MongoTemplate {
-        return MongoTemplate(mongoClient, databaseName)
-    }
-
+class MongoConfig{
     @Bean
     fun transactionManager(mongoTemplate: MongoTemplate): MongoTransactionManager {
         return MongoTransactionManager(mongoTemplate.mongoDatabaseFactory)
