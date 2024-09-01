@@ -3,10 +3,8 @@ import com.google.protobuf.gradle.id
 
 plugins {
     alias(libs.plugins.spring.dependency.management)
-    id("com.google.protobuf") version "0.9.2"
+    alias(libs.plugins.protobuf)
 }
-
-apply(plugin = "com.google.protobuf")
 
 dependencyManagement {
     imports {
@@ -19,15 +17,13 @@ dependencyManagement {
 
 dependencies {
     api(libs.kafka)
-    api(libs.armeria)
+    api(libs.armeria.kotlin)
     api(libs.armeria.grpc)
-    implementation("io.grpc:grpc-kotlin-stub:1.4.1")
-    implementation("com.google.protobuf:protobuf-kotlin:3.25.1")
+    api(libs.grpc.kotlin.stub)
+    api(libs.protobuf.kotlin)
 }
 
 plugins.withType<ProtobufPlugin> {
-
-    // protobuf file 소스 경로 지정
     sourceSets {
         main {
             proto {
@@ -36,18 +32,17 @@ plugins.withType<ProtobufPlugin> {
         }
     }
 
-    // protobuf compile, code generate 를 위한 설정
     protobuf {
         protoc {
-            artifact = "com.google.protobuf:protoc:3.25.1"
+            artifact = of(libs.artifact.protoc)
         }
 
         plugins {
             id("grpc") {
-                artifact = "io.grpc:protoc-gen-grpc-java:1.64.0"
+                artifact = of(libs.artifact.gen.grpc.java)
             }
             id("grpckt") {
-                artifact = "io.grpc:protoc-gen-grpc-kotlin:1.64.0:jdk8@jar"
+                artifact = of(libs.artifact.gen.grpc.kotlin) + "jdk8@jar"
             }
         }
 
