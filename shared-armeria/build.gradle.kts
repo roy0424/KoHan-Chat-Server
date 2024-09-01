@@ -21,6 +21,8 @@ dependencies {
     api(libs.armeria.grpc)
     api(libs.grpc.kotlin.stub)
     api(libs.protobuf.kotlin)
+
+    implementation(libs.uap.java)
 }
 
 plugins.withType<ProtobufPlugin> {

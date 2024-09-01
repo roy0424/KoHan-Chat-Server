@@ -1,6 +1,5 @@
 package com.kohan.authentication.vo
 
-import com.linecorp.armeria.common.multipart.MultipartFile
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
@@ -16,5 +15,4 @@ class SignUp(
     @field:Size(min = 2, max = 20, message = "Please enter a nickname of at least 2 characters and no more than 10 characters.")
     @field:NotEmpty(message = "Please enter a nickname.")
     val nickname: String,
-    val profileImage: MultipartFile,
 )

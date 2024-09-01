@@ -5,8 +5,8 @@ import com.kohan.shared.spring.mongo.collection.base.BaseCollection
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document(collation = "user")
-class UserCollection(
+@Document(collection = "user")
+data class UserCollection(
     /** Used as user login ID */
     @Indexed(unique = true)
     var email: String,
