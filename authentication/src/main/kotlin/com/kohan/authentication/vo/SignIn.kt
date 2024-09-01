@@ -1,10 +1,10 @@
 package com.kohan.authentication.vo
 
-import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.NotBlank
 
 class SignIn(
-    @NotEmpty(message = "이메일을 입력해주세요.")
+    @field:NotBlank(message = "Please enter email")
     val email: String,
-    @NotEmpty(message = "비밀번호를 입력해주세요.")
+    @field:NotBlank(message = "Please enter password")
     val password: String,
 )

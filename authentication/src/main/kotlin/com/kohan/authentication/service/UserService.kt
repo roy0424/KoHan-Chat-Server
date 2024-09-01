@@ -10,6 +10,7 @@ import com.kohan.authentication.vo.SignIn
 import com.kohan.authentication.vo.SignUp
 import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler
+import com.kohan.shared.spring.exception.handler.MismatchedInputExceptionHandler
 import com.linecorp.armeria.server.annotation.ExceptionHandler
 import com.linecorp.armeria.server.annotation.Post
 import com.linecorp.armeria.server.annotation.RequestObject
@@ -23,6 +24,7 @@ import java.time.LocalDateTime
 @Validated
 @ExceptionHandler(BusinessExceptionHandler::class)
 @ExceptionHandler(ConstraintViolationExceptionHandler::class)
+@ExceptionHandler(MismatchedInputExceptionHandler::class)
 class UserService(
     private val userRepository: UserRepository,
     private val userUtil: UserUtil,
@@ -43,10 +45,13 @@ class UserService(
     fun signIn(
         @Valid @RequestObject signIn: SignIn,
     ): TokenDto {
-        val user = userRepository.findByEmail(signIn.email) ?: throw UserErrorCode.NOT_FOUND_USER.businessException
-        if (!userUtil.matches(signIn.password, user.password)) {
-            throw UserErrorCode.NOT_FOUND_USER.businessException
-        }
+//        val user = userRepository.findByEmail(signIn.email) ?: throw UserErrorCode.NOT_FOUND_USER.businessException
+//        user.tokenInfos
+//        if (!userUtil.matches(signIn.password, user.password)) {
+//            throw UserErrorCode.NOT_FOUND_USER.businessException
+//        }
+
+        val user = userRepository.save(UserCollection("", "", "", "", mutableListOf()))
 
         return TokenDto("", LocalDateTime.now())
     }

@@ -14,6 +14,7 @@ class UserConfig(private val userService: UserService) {
     fun armeriaServerConfigurator(): ArmeriaServerConfigurator {
         return ArmeriaServerConfigurator { serverBuilder ->
             serverBuilder.annotatedService("/api", userService)
+
             serverBuilder.serviceUnder("/docs", DocService())
             serverBuilder.decorator(LoggingService.newDecorator())
             serverBuilder.accessLogWriter(AccessLogWriter.combined(), false)

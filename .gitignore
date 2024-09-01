@@ -43,3 +43,4 @@ bin/
 
 ### Spring ###
 *.yml
+*.yaml
