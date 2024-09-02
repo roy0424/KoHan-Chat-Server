@@ -44,7 +44,7 @@ plugins.withType<ProtobufPlugin> {
                 artifact = of(libs.artifact.gen.grpc.java)
             }
             id("grpckt") {
-                artifact = of(libs.artifact.gen.grpc.kotlin) + "jdk8@jar"
+                artifact = of(libs.artifact.gen.grpc.kotlin) + ":jdk8@jar"
             }
         }
 

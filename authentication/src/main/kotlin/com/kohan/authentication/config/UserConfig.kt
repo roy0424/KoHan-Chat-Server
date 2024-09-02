@@ -1,6 +1,6 @@
 package com.kohan.authentication.config
 
-import com.kohan.authentication.service.UserService
+import com.kohan.authentication.service.annotation.UserService
 import com.linecorp.armeria.server.docs.DocService
 import com.linecorp.armeria.server.logging.AccessLogWriter
 import com.linecorp.armeria.server.logging.LoggingService

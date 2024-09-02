@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.ktlint)
     alias(libs.plugins.spring.boot) apply false
     alias(libs.plugins.spring.dependency.management) apply false
     alias(libs.plugins.kotlin.spring) apply false
@@ -36,7 +35,6 @@ allprojects {
 
 subprojects {
     apply(plugin = rootProject.libs.plugins.kotlin.jvm.get().pluginId)
-    apply(plugin = rootProject.libs.plugins.ktlint.get().pluginId)
 
     dependencies {
         implementation(rootProject.libs.kotlin.stdlib)

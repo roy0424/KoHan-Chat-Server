@@ -1,5 +1,7 @@
-package com.kohan.authentication.service
+package com.kohan.authentication.service.annotation
 
+import com.kohan.authentication.collection.UserCollection
+import com.kohan.authentication.collection.item.TokenInfo
 import com.kohan.authentication.dto.TokenDto
 import com.kohan.authentication.exception.code.UserErrorCode
 import com.kohan.authentication.repository.UserRepository
@@ -18,6 +20,7 @@ import com.linecorp.armeria.server.annotation.ProducesJson
 import com.linecorp.armeria.server.annotation.RequestConverter
 import com.linecorp.armeria.server.annotation.RequestObject
 import jakarta.validation.Valid
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
@@ -43,9 +46,8 @@ class UserService(
     ): TokenDto {
         if (userRepository.existsByEmail(signUp.email)) throw UserErrorCode.DUPLICATED_EMAIL.businessException
 
-        val newToken = tokenGenerator.generate(accessDeviceInfo)
-        val newUser = userUtil.toUserCollection(signUp, newToken)
-        userRepository.save(newUser)
+        val newUser = userUtil.toUserCollection(signUp)
+        val (_, newToken) = saveUserWithNewToken(newUser, accessDeviceInfo)
 
         return newToken.toDto()
     }
@@ -63,14 +65,35 @@ class UserService(
         val user = userRepository.findByEmail(signIn.email) ?: throw UserErrorCode.NOT_FOUND_USER.businessException
         if (!userUtil.matches(signIn.password, user.password)) throw UserErrorCode.NOT_FOUND_USER.businessException
 
+        removeOldToken(user, accessDeviceInfo)
+        val (_, newToken) = saveUserWithNewToken(user, accessDeviceInfo)
+
+        return newToken.toDto()
+    }
+
+    protected fun saveUserWithNewToken(
+        newUser: UserCollection,
+        accessDeviceInfo: AccessDeviceInfo,
+    ): Pair<UserCollection, TokenInfo> {
+        while (true) {
+            try {
+                val newToken = tokenGenerator.generate(accessDeviceInfo)
+                newUser.tokenInfos.add(newToken)
+
+                return Pair(userRepository.save(newUser), newToken)
+            } catch (e: DuplicateKeyException) {
+                removeOldToken(newUser, accessDeviceInfo)
+                continue
+            }
+        }
+    }
+
+    private fun removeOldToken(
+        user: UserCollection,
+        accessDeviceInfo: AccessDeviceInfo,
+    ) {
         user.tokenInfos.firstOrNull { info -> info.accessDeviceInfo == accessDeviceInfo }?.let {
             user.tokenInfos.removeIf { info -> info == it }
         }
-
-        val newToken = tokenGenerator.generate(accessDeviceInfo)
-        user.tokenInfos.add(newToken)
-        userRepository.save(user)
-
-        return newToken.toDto()
     }
 }

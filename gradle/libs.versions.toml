@@ -16,6 +16,8 @@ grpc-kotlin-stub = "1.4.1"
 protoc-gen-grpc-java = "1.66.0"
 jackson-module-kotlin = "2.17.2"
 uap-java = "1.6.1"
+querydsl = "5.1.0"
+jakarta = "3.0.0"
 
 [libraries.boms-armeria]
 module = "com.linecorp.armeria:armeria-bom"
@@ -132,6 +134,18 @@ version.ref = "jackson-module-kotlin"
 [libraries.uap-java]
 module = "com.github.ua-parser:uap-java"
 version.ref = "uap-java"
+
+[libraries.querydsl-core]
+module = "com.querydsl:querydsl-core"
+version.ref = "querydsl"
+
+[libraries.querydsl-apt]
+module = "com.querydsl:querydsl-apt"
+version.ref = "querydsl"
+
+[libraries.querydsl-mongodb]
+module = "com.querydsl:querydsl-mongodb"
+version.ref = "querydsl"
 
 [plugins]
 spring-boot = {id = "org.springframework.boot", version.ref = "spring-boot"}
