@@ -5,17 +5,19 @@ import com.kohan.shared.spring.mongo.collection.base.BaseCollection
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document(collation = "user")
-class UserCollection(
-    /** 이메일 */
+@Document(collection = "user")
+data class UserCollection(
+    /** Used as user login ID */
     @Indexed(unique = true)
     var email: String,
-    /** 해쉬된 페스워드 */
+    /** Hashed password */
     var password: String,
-    /** 닉네임 */
+    /** Name as seen by other users */
     var nickname: String,
-    /** 프로필 이미지 경로 */
+    /** File server request URL*/
     var profileImageUrl: String,
-    /** 인증 토큰 정보 */
+    /** Access tokens used for user authentication <br>
+     *
+     *  A single user can use multiple devices with the same account */
     var tokenInfos: MutableList<TokenInfo>,
 ) : BaseCollection()

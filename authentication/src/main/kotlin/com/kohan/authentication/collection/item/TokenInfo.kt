@@ -1,25 +1,27 @@
 package com.kohan.authentication.collection.item
 
 import com.kohan.authentication.dto.TokenDto
+import com.kohan.shared.armeria.converter.request.result.AccessDeviceInfo
 import org.springframework.data.mongodb.core.index.Indexed
 import java.time.LocalDateTime
 
 class TokenInfo(
-    /** 토큰 */
+    /** Access Token */
     @Indexed(unique = true)
-    var token: String,
-    /** 토큰 만료기한 */
-    var expirationDate: LocalDateTime,
-//    /** 마지막 접속 IP */
-//    var lastAccessIp: String,
-//    /** 마지막 접속 일시 */
-//    var lastAccessDate: LocalDateTime,
-//    /** 기기 MAC 주소 */
-//    var macAddress: String,
+    val token: String,
+    /** Used at sign-in to distinguish whether the device is new or not. */
+    val accessDeviceInfo: AccessDeviceInfo,
+    /** The amount of millis before the token expires. */
+    val expirationMillis: Long,
+    /** Renewed when a user issues a token using the sign-in api. */
+    val issuanceDate: LocalDateTime = LocalDateTime.now(),
+    /** Token expiration date */
+    val expirationDate: LocalDateTime = issuanceDate.plus(expirationMillis, java.time.temporal.ChronoUnit.MILLIS),
 ) {
     fun toDto(): TokenDto {
         return TokenDto(
             token = token,
+            issuanceDate = issuanceDate,
             expiresAt = expirationDate,
         )
     }

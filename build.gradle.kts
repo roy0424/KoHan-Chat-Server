@@ -43,6 +43,7 @@ subprojects {
         implementation(rootProject.libs.kotlin.reflect)
         implementation(rootProject.libs.kotlin.coroutines.core)
         implementation(rootProject.libs.kotlin.coroutines.debug)
+        implementation(rootProject.libs.jackson.module.kotlin)
 
         testImplementation(rootProject.libs.kotlin.test)
         testImplementation(rootProject.libs.kotlin.coroutines.test)
