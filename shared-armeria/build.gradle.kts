@@ -21,6 +21,7 @@ dependencies {
     api(libs.armeria.grpc)
     api(libs.grpc.kotlin.stub)
     api(libs.protobuf.kotlin)
+    api(libs.protobuf.jackson)
 
     implementation(libs.uap.java)
 }
@@ -58,6 +59,14 @@ plugins.withType<ProtobufPlugin> {
                     id("kotlin")
                 }
             }
+        }
+    }
+}
+
+ktlint {
+    filter {
+        exclude { element ->
+            element.file.path.contains("/generated/")
         }
     }
 }

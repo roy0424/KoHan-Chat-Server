@@ -16,4 +16,10 @@ enum class UserErrorCode(val businessException: BusinessException) {
             mapOf("code" to "USER_002", "message" to "Not found user with condition"),
         ),
     ),
+    INVALID_TOKEN(
+        BusinessException(
+            HttpStatus.BAD_REQUEST,
+            mapOf("code" to "USER_003", "message" to "Invalid token"),
+        ),
+    ),
 }

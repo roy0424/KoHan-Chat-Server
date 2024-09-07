@@ -1,5 +1,5 @@
 [versions]
-armeria = "1.29.4"
+armeria = "1.28.4"
 spring-boot = "3.3.2"
 spring-dependency-management = "1.1.6"
 kafka = "3.7.0"
@@ -11,9 +11,10 @@ micrometer = "1.13.0"
 netty = "4.1.110.Final"
 resilience4j = "2.2.0"
 protobuf = "0.9.2"
-protobuf-kotlin = "4.28.0"
-grpc-kotlin-stub = "1.4.1"
-protoc-gen-grpc-java = "1.66.0"
+protobuf-kotlin = "3.24.0"
+grpc-kotlin-stub = "1.4.0"
+protoc-gen-grpc-java = "1.58.0"
+protobuf-jackson = "2.5.0"
 jackson-module-kotlin = "2.17.2"
 uap-java = "1.6.1"
 querydsl = "5.1.0"
@@ -118,6 +119,10 @@ version.ref = "protobuf-kotlin"
 [libraries.artifact-protoc]
 module = "com.google.protobuf:protoc"
 version.ref = "protobuf-kotlin"
+
+[libraries.protobuf-jackson]
+module = "org.curioswitch.curiostack:protobuf-jackson"
+version.ref = "protobuf-jackson"
 
 [libraries.artifact-gen-grpc-java]
 module = "io.grpc:protoc-gen-grpc-java"
