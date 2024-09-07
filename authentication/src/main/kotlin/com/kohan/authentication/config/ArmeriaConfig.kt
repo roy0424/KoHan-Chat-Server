@@ -7,12 +7,11 @@ import com.linecorp.armeria.server.grpc.GrpcService
 import com.linecorp.armeria.server.logging.AccessLogWriter
 import com.linecorp.armeria.server.logging.LoggingService
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator
-import io.grpc.kotlin.AbstractCoroutineServerImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ArmeriaConfig{
+class ArmeriaConfig {
     @Bean
     fun armeriaServerConfigurator(
         userService: UserService,

@@ -9,6 +9,12 @@ plugins {
     alias(libs.plugins.kotlin.allopen) apply false
 }
 
+ktlint {
+    filter {
+        exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/generated/") }
+    }
+}
+
 allprojects {
     group = " com.kohan"
     version = "1.0-SNAPSHOT"

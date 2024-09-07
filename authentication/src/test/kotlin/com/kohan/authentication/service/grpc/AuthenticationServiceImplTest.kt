@@ -3,7 +3,6 @@ package com.kohan.authentication.service.grpc
 import com.kohan.authentication.collection.UserCollection
 import com.kohan.authentication.collection.item.TokenInfo
 import com.kohan.authentication.repository.UserRepository
-import com.kohan.authentication.service.annotation.UserService
 import com.kohan.authentication.util.TokenGenerator
 import com.kohan.authentication.util.UserUtil
 import com.kohan.authentication.vo.SignUp
@@ -11,17 +10,14 @@ import com.kohan.shared.armeria.authentication.v1.Authentication.UserToken
 import com.kohan.shared.armeria.authentication.v1.AuthenticationServiceGrpc.AuthenticationServiceBlockingStub
 import com.kohan.shared.armeria.converter.request.result.AccessDeviceInfo
 import com.linecorp.armeria.client.grpc.GrpcClients
-import java.time.LocalDateTime
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.transaction.annotation.Transactional
+import kotlin.test.assertEquals
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -48,10 +44,11 @@ class AuthenticationServiceImplTest(
 
     @Test
     fun authenticateUser() {
-        val client = GrpcClients.newClient(
-            "http://127.0.0.1:8080/grpc/v1/",
-            AuthenticationServiceBlockingStub::class.java
-        )
+        val client =
+            GrpcClients.newClient(
+                "http://127.0.0.1:8080/grpc/v1/",
+                AuthenticationServiceBlockingStub::class.java,
+            )
         val userToken = UserToken.newBuilder().setToken(token.token).build()
         val responseUser = client.authenticateUser(userToken)
 
