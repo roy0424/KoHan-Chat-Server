@@ -15,6 +15,7 @@ jobs:
     strategy:
       matrix:
         java-version: [21]
+        mongodb-version: ['8.0']
 
     steps:
     - name: Checkout code
@@ -25,6 +26,23 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java-version }}
+
+    - name: Start MongoDB
+      uses: supercharge/mongodb-github-action@1.11.0
+      with:
+        mongodb-version: ${{ matrix.mongodb-version }}
+
+    - name: Create application-test.yml in all modules
+      run: |
+        modules=("authentication" "file" "message-rest" "push") # 하위 모듈의 이름들
+        for module in "${modules[@]}"
+        do
+          mkdir -p $module/src/main/resources
+          echo "spring:" > $module/src/main/resources/application.yml
+          echo "  data:" >> $module/src/main/resources/application.yml
+          echo "    mongodb:" >> $module/src/main/resources/application.yml
+          echo "      uri: mongodb://localhost:27017/testdb" >> $module/src/main/resources/application.yml
+        done
 
     - name: Cache Gradle packages
       uses: actions/cache@v3
