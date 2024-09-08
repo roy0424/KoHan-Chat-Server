@@ -44,6 +44,20 @@ jobs:
           echo "      uri: mongodb://localhost:27017/testdb" >> $module/src/main/resources/application-test.yml
         done
 
+    - name: Verify application.yml files
+      run: |
+        modules=("authentication" "file" "message-rest" "push")
+        for module in "${modules[@]}"
+        do
+          if [ -f "$module/src/main/resources/application.yml" ]; then
+            echo "File $module/src/main/resources/application.yml exists."
+            cat $module/src/main/resources/application.yml
+          else
+            echo "File $module/src/main/resources/application.yml does not exist!" >&2
+            exit 1
+          fi
+        done
+
     - name: Cache Gradle packages
       uses: actions/cache@v3
       with:
