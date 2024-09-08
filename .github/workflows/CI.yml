@@ -41,7 +41,7 @@ jobs:
           echo "spring:" > $module/src/main/resources/application.yml
           echo "  data:" >> $module/src/main/resources/application.yml
           echo "    mongodb:" >> $module/src/main/resources/application.yml
-          echo "      uri: mongodb://localhost:27017/testdb" >> $module/src/main/resources/application-test.yml
+          echo "      uri: mongodb://localhost:27017/testdb" >> $module/src/main/resources/application.yml
         done
 
     - name: Verify application.yml files
