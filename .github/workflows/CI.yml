@@ -43,11 +43,11 @@ jobs:
 
     - name: Create MongoDB User with testdb access
       run: |
-        mongosh --username root --password root1234 --authenticationDatabase admin --eval 'use admin; db.createUser({user: "test", pwd: "test1234", roles: [{role: "readWrite", db: "testdb"}]})'
+        mongosh --username root --password root1234 --authenticationDatabase admin --eval 'use admin' --eval 'db.createUser({user: "test", pwd: "test1234", roles: [{role: "readWrite", db: "testdb"}]})'
 
     - name: Create user collection in testdb
       run: |
-        mongosh --username test --password test1234 --authenticationDatabase admin --eval 'use testdb; db.createCollection("user")'
+        mongosh --username test --password test1234 --authenticationDatabase admin --eval 'use testdb' --eval 'db.createCollection("user")'
 
     - name: Verify user collection in testdb
       run: |
