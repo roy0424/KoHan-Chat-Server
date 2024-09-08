@@ -34,6 +34,17 @@ jobs:
         mongodb-username: 'test'
         mongodb-password: 'test1234'
 
+    - name: Install MongoDB CLI
+      run: |
+        wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+        echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+        sudo apt-get update
+        sudo apt-get install -y mongodb-org-shell
+
+    - name: Create user collection in testdb
+      run: |
+        mongo --eval 'use testdb; db.createCollection("user")'
+
     - name: Create application-test.yml in all modules
       run: |
         modules=("authentication" "file" "message-rest" "push")
