@@ -31,32 +31,19 @@ jobs:
       with:
         mongodb-version: latest
         mongodb-db: 'testdb'
-
-    - name: Wait for MongoDB to start
-      run: |
-        sleep 5
-
-    - name: Install MongoDB CLI
-      run: |
-        wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-        echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-        sudo apt-get update
-        sudo apt-get install -y mongodb-org-shell
-
-    - name: Create MongoDB User
-      run: |
-        mongo --eval 'use admin; db.createUser({user: "testuser", pwd: "testpassword", roles: [{role: "readWrite", db: "testdb"}]})'
+        mongodb-username: root
+        mongodb-password: root1234
 
     - name: Create application-test.yml in all modules
       run: |
-        modules=("authentication" "file" "message-rest" "push") # 하위 모듈의 이름들
+        modules=("authentication" "file" "message-rest" "push")
         for module in "${modules[@]}"
         do
           mkdir -p $module/src/main/resources
           echo "spring:" > $module/src/main/resources/application.yml
           echo "  data:" >> $module/src/main/resources/application.yml
           echo "    mongodb:" >> $module/src/main/resources/application.yml
-          echo "      uri: mongodb://testuser:testpassword@localhost:27017/testdb" >> $module/src/main/resources/application-test.yml
+          echo "      uri: mongodb://root:root1234@localhost:27017/testdb?authSource=admin" >> $module/src/main/resources/application-test.yml
         done
 
     - name: Cache Gradle packages
