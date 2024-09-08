@@ -22,12 +22,12 @@ data class UserCollection(
      *  A single user can use multiple devices with the same account */
     var tokenInfos: MutableList<TokenInfo>,
 ) : BaseCollection() {
-    fun toDto(): UserDto {
-        return UserDto.newBuilder()
+    fun toDto(): UserDto =
+        UserDto
+            .newBuilder()
             .setObjectId(id.toString())
             .setEmail(email)
             .setNickname(nickname)
             .setProfileImageUrl(profileImageUrl)
             .build()
-    }
 }

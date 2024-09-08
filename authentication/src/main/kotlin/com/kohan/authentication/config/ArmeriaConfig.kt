@@ -16,12 +16,13 @@ class ArmeriaConfig {
     fun armeriaServerConfigurator(
         userService: UserService,
         authenticationServiceImpl: AuthenticationServiceImpl,
-    ): ArmeriaServerConfigurator {
-        return ArmeriaServerConfigurator { serverBuilder ->
+    ): ArmeriaServerConfigurator =
+        ArmeriaServerConfigurator { serverBuilder ->
             serverBuilder.annotatedService("/api", userService)
             serverBuilder.service(
                 "prefix:/grpc/v1",
-                GrpcService.builder()
+                GrpcService
+                    .builder()
                     .addService(authenticationServiceImpl)
                     .enableUnframedRequests(true)
                     .build(),
@@ -31,5 +32,4 @@ class ArmeriaConfig {
             serverBuilder.decorator(LoggingService.newDecorator())
             serverBuilder.accessLogWriter(AccessLogWriter.combined(), false)
         }
-    }
 }

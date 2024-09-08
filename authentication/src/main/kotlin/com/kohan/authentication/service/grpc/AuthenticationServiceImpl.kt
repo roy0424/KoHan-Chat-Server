@@ -18,7 +18,8 @@ class AuthenticationServiceImpl(
                 userRepository.findByTokenInfosToken(request.token)
             }
                 ?: throw UserErrorCode.INVALID_TOKEN.businessException
-        return Authentication.UserDto.newBuilder()
+        return Authentication.UserDto
+            .newBuilder()
             .setObjectId(user.id.toString())
             .setEmail(user.email)
             .setNickname(user.nickname)

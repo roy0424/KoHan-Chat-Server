@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 @EnableTransactionManagement
 class MongoConfig {
     @Bean
-    fun transactionManager(mongoTemplate: MongoTemplate): MongoTransactionManager {
-        return MongoTransactionManager(mongoTemplate.mongoDatabaseFactory)
-    }
+    fun transactionManager(mongoTemplate: MongoTemplate): MongoTransactionManager =
+        MongoTransactionManager(mongoTemplate.mongoDatabaseFactory)
 }

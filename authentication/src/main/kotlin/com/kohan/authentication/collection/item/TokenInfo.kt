@@ -18,11 +18,10 @@ class TokenInfo(
     /** Token expiration date */
     val expirationDate: LocalDateTime = issuanceDate.plus(expirationMillis, java.time.temporal.ChronoUnit.MILLIS),
 ) {
-    fun toDto(): TokenDto {
-        return TokenDto(
+    fun toDto(): TokenDto =
+        TokenDto(
             token = token,
             issuanceDate = issuanceDate,
             expiresAt = expirationDate,
         )
-    }
 }

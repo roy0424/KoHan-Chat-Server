@@ -10,20 +10,17 @@ class UserUtil(
     private val passwordUtil: PasswordUtil,
     private val fileClient: FileClient,
 ) {
-    fun toUserCollection(signUp: SignUp): UserCollection {
-        return UserCollection(
+    fun toUserCollection(signUp: SignUp): UserCollection =
+        UserCollection(
             email = signUp.email,
             password = passwordUtil.hash(signUp.password),
             nickname = signUp.nickname,
             profileImageUrl = fileClient.upload(),
             tokenInfos = mutableListOf(),
         )
-    }
 
     fun matches(
         password: String,
         hash: String,
-    ): Boolean {
-        return passwordUtil.matches(password, hash)
-    }
+    ): Boolean = passwordUtil.matches(password, hash)
 }

@@ -63,14 +63,6 @@ plugins.withType<ProtobufPlugin> {
     }
 }
 
-ktlint {
-    filter {
-        exclude { element ->
-            element.file.path.contains("/generated/")
-        }
-    }
-}
-
 fun of(dependency: Provider<MinimalExternalModuleDependency>): String {
     val bom = dependency.get()
     return "${bom.group}:${bom.name}:${bom.version}"

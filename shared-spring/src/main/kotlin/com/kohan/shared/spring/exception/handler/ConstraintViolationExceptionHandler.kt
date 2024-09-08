@@ -20,10 +20,10 @@ class ConstraintViolationExceptionHandler : ExceptionHandlerFunction {
 
         val mapper = ObjectMapper()
         val errors =
-            exception.constraintViolations.map {
-                    violation ->
-                mapOf(violation.propertyPath.reduce { _, fieldName -> fieldName }.toString() to violation.message)
-            }.reversed()
+            exception.constraintViolations
+                .map { violation ->
+                    mapOf(violation.propertyPath.reduce { _, fieldName -> fieldName }.toString() to violation.message)
+                }.reversed()
 
         return HttpResponse.of(HttpStatus.BAD_REQUEST, MediaType.JSON, HttpData.ofUtf8(mapper.writeValueAsString(errors)))
     }
