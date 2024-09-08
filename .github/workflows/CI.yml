@@ -31,8 +31,8 @@ jobs:
       with:
         mongodb-version: latest
         mongodb-db: 'testdb'
-        mongodb-username: 'test'
-        mongodb-password: 'test1234'
+        mongodb-username: 'root'
+        mongodb-password: 'root1234'
 
     - name: Install MongoDB CLI
       run: |
@@ -40,6 +40,10 @@ jobs:
         echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
         sudo apt-get update
         sudo apt-get install -y mongodb-mongosh
+
+    - name: Create MongoDB User with testdb access
+      run: |
+        mongosh --username root --password root1234 --authenticationDatabase admin --eval 'use admin; db.createUser({user: "test", pwd: "test1234", roles: [{role: "readWrite", db: "testdb"}]})'
 
     - name: Create user collection in testdb
       run: |
