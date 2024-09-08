@@ -30,6 +30,8 @@ jobs:
       uses: supercharge/mongodb-github-action@1.11.0
       with:
         mongodb-version: latest
+        mongodb-root-username: root
+        mongodb-root-password: root1234
 
     - name: Create application-test.yml in all modules
       run: |
@@ -40,7 +42,7 @@ jobs:
           echo "spring:" > $module/src/main/resources/application.yml
           echo "  data:" >> $module/src/main/resources/application.yml
           echo "    mongodb:" >> $module/src/main/resources/application.yml
-          echo "      uri: mongodb://localhost:27017/testdb" >> $module/src/main/resources/application.yml
+          echo "      uri: mongodb://root:root1234@localhost:27017/testdb?authSource=admin" >> $module/src/main/resources/application-test.yml
         done
 
     - name: Cache Gradle packages
