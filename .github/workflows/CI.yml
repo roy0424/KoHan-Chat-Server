@@ -36,16 +36,14 @@ jobs:
       run: |
         sleep 5
 
+    - name: Install MongoDB CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mongodb-clients
+
     - name: Create MongoDB User
       run: |
-        mongo <<EOF
-        use admin
-        db.createUser({
-          user: "testuser",
-          pwd: "testpassword",
-          roles: [ { role: "readWrite", db: "testdb" } ]
-        })
-        EOF
+        mongo --eval 'use admin; db.createUser({user: "testuser", pwd: "testpassword", roles: [{role: "readWrite", db: "testdb"}]})'
 
     - name: Create application-test.yml in all modules
       run: |
