@@ -39,11 +39,11 @@ jobs:
         wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
         echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
         sudo apt-get update
-        sudo apt-get install -y mongodb-org-shell
+        sudo apt-get install -y mongodb-mongosh
 
     - name: Create user collection in testdb
       run: |
-        mongo --username test --password test1234 --authenticationDatabase admin --eval 'use testdb; db.createCollection("user")'
+        mongosh --username test --password test1234 --authenticationDatabase admin --eval 'use testdb; db.createCollection("user")'
 
     - name: Create application-test.yml in all modules
       run: |
