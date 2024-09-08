@@ -31,6 +31,8 @@ jobs:
       with:
         mongodb-version: latest
         mongodb-db: 'testdb'
+        mongodb-username: 'test'
+        mongodb-password: 'test1234'
 
     - name: Create application-test.yml in all modules
       run: |
@@ -41,7 +43,7 @@ jobs:
           echo "spring:" > $module/src/main/resources/application.yml
           echo "  data:" >> $module/src/main/resources/application.yml
           echo "    mongodb:" >> $module/src/main/resources/application.yml
-          echo "      uri: mongodb://localhost:27017/testdb" >> $module/src/main/resources/application.yml
+          echo "      uri: mongodb://test:test1234@localhost:27017/testdb" >> $module/src/main/resources/application.yml
         done
 
     - name: Verify application.yml files
