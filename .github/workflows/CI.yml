@@ -45,6 +45,16 @@ jobs:
       run: |
         mongosh --username test --password test1234 --authenticationDatabase admin --eval 'use testdb; db.createCollection("user")'
 
+    - name: Verify user collection in testdb
+      run: |
+        COLLECTION_COUNT=$(mongosh --quiet --username test --password test1234 --authenticationDatabase admin --eval 'db.getSiblingDB("testdb").getCollectionNames().indexOf("user") != -1')
+        if [ "$COLLECTION_COUNT" = "true" ]; then
+          echo "User collection exists."
+        else
+          echo "User collection does not exist!" >&2
+          exit 1
+        fi
+
     - name: Create application-test.yml in all modules
       run: |
         modules=("authentication" "file" "message-rest" "push")
