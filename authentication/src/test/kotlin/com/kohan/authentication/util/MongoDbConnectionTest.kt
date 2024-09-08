@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.MongoTemplate
 
 @SpringBootTest
 class MongoDbConnectionTest {
-
     @Autowired
     lateinit var mongoTemplate: MongoTemplate
 
