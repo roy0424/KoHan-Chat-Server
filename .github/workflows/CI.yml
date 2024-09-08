@@ -30,8 +30,9 @@ jobs:
       uses: supercharge/mongodb-github-action@1.11.0
       with:
         mongodb-version: latest
-        mongodb-root-username: root
-        mongodb-root-password: root1234
+        mongodb-db: 'testdb'
+        mongodb-username: root
+        mongodb-password: root1234
 
     - name: Create application-test.yml in all modules
       run: |
