@@ -1,5 +1,0 @@
-kohan:
-  authentication:
-    token:
-      length: 32
-      expiration: 86400000
