@@ -1,0 +1,26 @@
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+  profiles:
+    include:
+      - mongo
+
+kohan:
+  authentication:
+    token:
+      length: ${AUTHENTICATION_TOKEN_LENGTH}
+      expiration: ${AUTHENTICATION_TOKEN_EXPIRATION}
+    password:
+      hash:
+        saltLength: ${AUTHENTICATION_PASSWORD_HASH_SALT_LENGTH}
+        hashLength: ${AUTHENTICATION_PASSWORD_HASH_LENGTH}
+        parallelism: ${AUTHENTICATION_PASSWORD_HASH_PARALLELISM}
+        iterations: ${AUTHENTICATION_PASSWORD_HASH_ITERATIONS}
+        memory: ${AUTHENTICATION_PASSWORD_HASH_MEMORY}
+    client:
+      file:
+        grpc:
+          host: ${FILE_GRPC_HOST}
+          port: ${FILE_GRPC_PORT}
+          responseTimeout: ${GRPC_TIMEOUT}
