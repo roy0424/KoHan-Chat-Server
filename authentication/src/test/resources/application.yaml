@@ -1,4 +1,0 @@
-spring:
-  data:
-    mongodb:
-      uri: mongodb://test:test1234@localhost:27017/testdb?authSource=admin

@@ -41,4 +41,3 @@ bin/
 ### Spring ###
 *.yml
 *.yaml
-!**/test/resources/application.yaml
