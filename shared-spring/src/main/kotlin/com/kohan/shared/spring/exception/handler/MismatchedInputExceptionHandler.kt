@@ -20,10 +20,10 @@ class MismatchedInputExceptionHandler : ExceptionHandlerFunction {
 
         val mapper = ObjectMapper()
         val errors =
-            exception.path.map {
-                    path ->
-                mapOf(path.fieldName to "${path.fieldName} field is missing")
-            }.reversed()
+            exception.path
+                .map { path ->
+                    mapOf(path.fieldName to "${path.fieldName} field is missing")
+                }.reversed()
 
         return HttpResponse.of(HttpStatus.BAD_REQUEST, MediaType.JSON, HttpData.ofUtf8(mapper.writeValueAsString(errors)))
     }

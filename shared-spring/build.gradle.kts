@@ -4,6 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.allopen)
 }
 
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
 dependencies {
     api(project(":shared-armeria"))
     api(libs.kotlin.allopen)

@@ -19,14 +19,10 @@ class PasswordUtil(
 ) {
     private val argon2PasswordEncoder = Argon2PasswordEncoder(saltLength, hashLength, parallelism, memory, iterations)
 
-    fun hash(password: String): String {
-        return argon2PasswordEncoder.encode(password)
-    }
+    fun hash(password: String): String = argon2PasswordEncoder.encode(password)
 
     fun matches(
         password: String,
         hash: String,
-    ): Boolean {
-        return argon2PasswordEncoder.matches(password, hash)
-    }
+    ): Boolean = argon2PasswordEncoder.matches(password, hash)
 }

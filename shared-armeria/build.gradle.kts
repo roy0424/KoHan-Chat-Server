@@ -1,9 +1,10 @@
-import com.google.protobuf.gradle.ProtobufPlugin
 import com.google.protobuf.gradle.id
+import com.google.protobuf.gradle.protobuf
+
 
 plugins {
-    alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.spring.dependency.management)
 }
 
 dependencyManagement {
@@ -16,47 +17,45 @@ dependencyManagement {
 }
 
 dependencies {
+    protobuf(project(":proto"))
+
     api(libs.kafka)
+
     api(libs.armeria.kotlin)
     api(libs.armeria.grpc)
+
+    api(libs.grpc.stub)
+    api(libs.grpc.protobuf)
     api(libs.grpc.kotlin.stub)
+
     api(libs.protobuf.kotlin)
 
     implementation(libs.uap.java)
 }
 
-plugins.withType<ProtobufPlugin> {
-    sourceSets {
-        main {
-            proto {
-                srcDir("/proto/order")
-            }
+protobuf {
+    protoc {
+        artifact = of(libs.artifact.protoc)
+    }
+
+    plugins {
+        id("grpc") {
+            artifact = of(libs.artifact.gen.grpc.java)
+        }
+        id("grpckt") {
+            artifact = of(libs.artifact.gen.grpc.kotlin) + ":jdk8@jar"
         }
     }
 
-    protobuf {
-        protoc {
-            artifact = of(libs.artifact.protoc)
-        }
-
-        plugins {
-            id("grpc") {
-                artifact = of(libs.artifact.gen.grpc.java)
+    // generate code
+    generateProtoTasks {
+        all().forEach {
+            it.plugins {
+                id("grpc")
+                id("grpckt")
             }
-            id("grpckt") {
-                artifact = of(libs.artifact.gen.grpc.kotlin) + "jdk8@jar"
-            }
-        }
-
-        generateProtoTasks {
-            ofSourceSet("main").forEach {
-                it.plugins {
-                    id("grpc")
-                    id("grpckt")
-                }
-                it.builtins {
-                    id("kotlin")
-                }
+            it.builtins {
+                id("kotlin")
             }
         }
     }
