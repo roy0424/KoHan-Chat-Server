@@ -39,5 +39,4 @@ bin/
 .DS_Store
 
 ### Spring ###
-*.yml
-*.yaml
+.env
