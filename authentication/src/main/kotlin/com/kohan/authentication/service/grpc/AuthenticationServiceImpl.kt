@@ -16,8 +16,7 @@ class AuthenticationServiceImpl(
         val user =
             withContext(Dispatchers.IO) {
                 userRepository.findByTokenInfosToken(request.token)
-            }
-                ?: throw UserErrorCode.INVALID_TOKEN.businessException
+            } ?: throw UserErrorCode.INVALID_TOKEN.businessException
         return Authentication.UserDto
             .newBuilder()
             .setObjectId(user.id.toString())

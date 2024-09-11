@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package com.kohan.shared.armeria.file.v1;
+
+message UploadFileVO {
+  bytes fileContent = 1;
+  string fileName = 2;
+  string extension = 3;
+  string roomKey = 4;
+  string userKey = 5;
+}
+
+message UploadFileDTO {
+  string fileKey = 1;
+}
+
+service FileUploadService {
+  rpc upload(UploadFileVO) returns (UploadFileDTO) {}
+}

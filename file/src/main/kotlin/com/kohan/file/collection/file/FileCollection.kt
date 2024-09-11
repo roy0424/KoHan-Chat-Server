@@ -5,17 +5,20 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document(collation = "file")
+@Document(collection = "file")
 class FileCollection(
-    /** 업로드 한 파일 이름 */
+    /** Original file name */
     var originalFileName: String,
-    /** 서버 파일 시스템에 저장된 파일 이름 */
+    /** The name of the file stored on the server file system */
     var fileName: String,
-    /** 업로드한 파일의 확장자 */
+    /** Original file extension */
     var extension: String,
-    /** 파일 사이즈 */
+    /** File size Bytes */
     var fileSize: Int,
-    /** 업로드한 사람 */
+    /** Upload chat room */
+    @Indexed
+    var uploadChatRoomKey: ObjectId,
+    /** upload user */
     @Indexed
     var uploadUserKey: ObjectId,
 ) : BaseCollection()
