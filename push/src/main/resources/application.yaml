@@ -1,0 +1,17 @@
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+  profiles:
+    include:
+      - mongo
+
+kohan:
+  push:
+    firebase:
+      secret:
+        key:
+          path: ${FIREBASE_SECRET_KEY_PATH}
+      messages:
+        send:
+          url: ${FIREBASE_MESSAGES_SEND_URL}
