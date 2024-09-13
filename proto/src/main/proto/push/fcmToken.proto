@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package com.kohan.shared.armeria.push.v1;
+
+import "google/protobuf/empty.proto";
+
+message RegisterFCMToken {
+  string userId = 1;
+  string token = 2;
+  string accessedAt = 3;
+}
+
+message UnRegisterFCMToken {
+  string userId = 1;
+  string token = 2;
+}
+
+service FCMTokenService {
+  rpc registerFCMToken(RegisterFCMToken) returns (google.protobuf.Empty) {}
+  rpc unregisterFCMToken(UnRegisterFCMToken) returns (google.protobuf.Empty) {}
+}
