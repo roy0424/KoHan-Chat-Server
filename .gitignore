@@ -40,3 +40,6 @@ bin/
 
 ### Spring ###
 .env
+
+### Firebase ###
+firebase_secret_key.json

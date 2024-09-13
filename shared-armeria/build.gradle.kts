@@ -31,6 +31,8 @@ dependencies {
     api(libs.protobuf.kotlin)
 
     implementation(libs.uap.java)
+
+    runtimeOnly(libs.slf4j.simple)
 }
 
 protobuf {

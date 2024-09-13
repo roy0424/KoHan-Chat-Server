@@ -6,6 +6,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":shared-armeria"))
     implementation(project(":shared-spring"))
+    implementation(libs.firebase.admin)
 }
