@@ -12,7 +12,16 @@ configurations {
 
 dependencies {
     api(project(":shared-armeria")) {
-        exclude(group = libs.slf4j.simple.get().group, module = libs.slf4j.simple.get().name)
+        exclude(
+            group =
+                libs.slf4j.simple
+                    .get()
+                    .group,
+            module =
+                libs.slf4j.simple
+                    .get()
+                    .name,
+        )
     }
     api(libs.kotlin.allopen)
     api(libs.armeria.spring.boot3.starter)
