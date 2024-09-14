@@ -29,7 +29,9 @@ dependencies {
     api(libs.spring.boot.starter.validation)
     api(libs.spring.boot.starter.data.mongodb)
     api(libs.bcprov.jdk18on)
+    api(libs.spring.embed.mongo)
 
+    testApi(libs.embed.mongo)
     annotationProcessor(libs.spring.boot.configuration.processor)
 
     runtimeOnly(libs.armeria.spring.boot3.actuator.starter)
