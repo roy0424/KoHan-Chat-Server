@@ -16,6 +16,7 @@ protobuf-kotlin = "3.25.3"
 jackson-module-kotlin = "2.17.2"
 uap-java = "1.6.1"
 ktlint = "1.3.1"
+embed-mongo = "4.16.1"
 
 [libraries.boms-armeria]
 module = "com.linecorp.armeria:armeria-bom"
@@ -144,6 +145,14 @@ version.ref = "uap-java"
 [libraries.ktlint]
 module = "com.pinterest.ktlint:ktlint-cli"
 version.ref = "ktlint"
+
+[libraries.embed-mongo]
+module = "de.flapdoodle.embed:de.flapdoodle.embed.mongo"
+version.ref = "embed-mongo"
+
+[libraries.spring-embed-mongo]
+module = "de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x"
+version.ref = "embed-mongo"
 
 [plugins]
 spring-boot = {id = "org.springframework.boot", version.ref = "spring-boot"}
