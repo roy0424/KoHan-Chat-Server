@@ -15,3 +15,7 @@ kohan:
       messages:
         send:
           url: ${FIREBASE_MESSAGES_SEND_URL}
+      registration:
+        token:
+          expiration:
+            day: ${FIREBASE_REGISTRATION_TOKEN_EXPIRATION_DAY}
