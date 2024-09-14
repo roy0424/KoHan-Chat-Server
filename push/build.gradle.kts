@@ -7,5 +7,10 @@ plugins {
 
 dependencies {
     implementation(project(":shared-spring"))
-    implementation(libs.firebase.admin)
+    implementation(libs.firebase.admin) {
+        exclude(
+            group = "commons-logging",
+            module = "commons-logging"
+        )
+    }
 }
