@@ -4,6 +4,7 @@ import com.kohan.push.repository.FCMTokenRepository
 import java.time.LocalDateTime
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class FCMTokenCleanupScheduler(
@@ -11,6 +12,7 @@ class FCMTokenCleanupScheduler(
     @Value("\${kohan.push.firebase.registration.token.expiration.day}")
     private val expirationDate: Long
 ) {
+    @Transactional
     fun deleteExpiredTokens() {
         val expiryDate = LocalDateTime.now().minusDays(expirationDate)
         fcmTokenRepository.findByTokensAccessedAtBefore(expiryDate)

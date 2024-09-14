@@ -149,6 +149,26 @@ version.ref = "uap-java"
 module = "com.pinterest.ktlint:ktlint-cli"
 version.ref = "ktlint"
 
+[libraries.firebase-admin]
+module = "com.google.firebase:firebase-admin"
+version.ref = "firebase-admin"
+
+[libraries.slf4j-simple]
+module = "org.slf4j:slf4j-simple"
+version.ref = "slf4j"
+
+[libraries.dotenv]
+module = "io.github.cdimascio:dotenv-kotlin"
+version.ref = "dotenv"
+
+[libraries.embed-mongo]
+module = "de.flapdoodle.embed:de.flapdoodle.embed.mongo"
+version.ref = "embed-mongo"
+
+[libraries.spring-embed-mongo]
+module = "de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x"
+version.ref = "embed-mongo"
+
 [plugins]
 spring-boot = {id = "org.springframework.boot", version.ref = "spring-boot"}
 spring-dependency-management = {id = "io.spring.dependency-management", version.ref = "spring-dependency-management"}

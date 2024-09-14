@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: test
+
+kohan:
+  push:
+    firebase:
+      registration:
+        token:
+          expiration:
+            day: 30

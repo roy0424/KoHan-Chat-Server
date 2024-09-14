@@ -14,7 +14,7 @@ class TestService(
         if (data.token == null) {
             throw IllegalArgumentException("Token must not be null")
         }
-        fcmService.sendNotificationToToken(
+        fcmService.sendNotification(
             token = data.token,
             title = data.title,
             body = data.body,
@@ -28,7 +28,7 @@ class TestService(
         if (data.topic == null) {
             throw IllegalArgumentException("Topic must not be null")
         }
-        fcmService.sendNotificationToTopic(
+        fcmService.sendNotification(
             topic = data.topic,
             title = data.title,
             body = data.body,

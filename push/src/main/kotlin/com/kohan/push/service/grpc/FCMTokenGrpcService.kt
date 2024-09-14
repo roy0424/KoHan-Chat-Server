@@ -11,11 +11,13 @@ import kotlinx.coroutines.withContext
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class FCMTokenGrpcService(
     private val fcmTokenRepository: FCMTokenRepository,
 ) : FCMTokenServiceGrpcKt.FCMTokenServiceCoroutineImplBase() {
+    @Transactional
     override suspend fun registerFCMToken(request: FcmToken.RegisterFCMToken): Empty {
         val fcmTokenCollection =
             withContext(Dispatchers.IO) {
@@ -37,6 +39,7 @@ class FCMTokenGrpcService(
         return Empty.getDefaultInstance()
     }
 
+    @Transactional
     override suspend fun unregisterFCMToken(request: FcmToken.UnRegisterFCMToken): Empty {
         val fcmTokenCollection =
             withContext(Dispatchers.IO) {
