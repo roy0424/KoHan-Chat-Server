@@ -24,85 +24,34 @@ class FCMService(
     private val firebaseConfigPath: String,
     private val objectMapper: ObjectMapper,
 ) {
-    fun sendNotificationToToken(
-        token: String,
+    fun sendNotification(
+        token: String? = null,
+        topic: String? = null,
         title: String,
         body: String,
         image: String?,
         chatRoomId: String,
     ) {
-        val fcmMessage =
-            makeFCMMessage(
-                token = token,
-                title = title,
-                body = body,
-                image = image,
-                data = mapOf("chatRoomId" to chatRoomId),
-            )
-        val client =
-            WebClient
-                .builder(apiUrl)
-                .build()
-
-        val headers =
-            RequestHeaders.of(
-                HttpMethod.POST,
-                "/",
-                HttpHeaderNames.AUTHORIZATION,
-                "Bearer ${getAccessToken()}",
-                HttpHeaderNames.CONTENT_TYPE,
-                MediaType.JSON_UTF_8,
-            )
-
+        val fcmMessage = makeFCMMessage(
+            token = token,
+            topic = topic,
+            title = title,
+            body = body,
+            image = image,
+            data = mapOf("chatRoomId" to chatRoomId),
+        )
+        val webClient = WebClient.builder(apiUrl).build()
+        val headers = createRequestHeaders()
         val request = HttpRequest.of(headers, HttpData.ofUtf8(fcmMessage))
 
-        client
+        webClient
             .execute(request)
             .aggregate()
             .handle { response, throwable ->
-                val statusCode = response.status().code()
-                val responseBody = response.contentUtf8()
-                println("Response status: $statusCode")
-                println("Response body: $responseBody")
-            }
-    }
-
-    fun sendNotificationToTopic(
-        topic: String,
-        title: String,
-        body: String,
-        image: String?,
-        chatRoomId: String,
-    ) {
-        val fcmMessage =
-            makeFCMMessage(
-                topic = topic,
-                title = title,
-                body = body,
-                image = image,
-                data = mapOf("chatRoomId" to chatRoomId),
-            )
-        val client =
-            WebClient
-                .builder(apiUrl)
-                .build()
-
-        val headers =
-            RequestHeaders.of(
-                HttpMethod.POST,
-                "/",
-                HttpHeaderNames.AUTHORIZATION,
-                "Bearer ${getAccessToken()}",
-                HttpHeaderNames.CONTENT_TYPE,
-                MediaType.JSON_UTF_8,
-            )
-
-        val request = HttpRequest.of(headers, HttpData.ofUtf8(fcmMessage))
-
-        client
-            .execute(request)
-            .aggregate()
-            .handle { response, throwable ->
+                if (throwable != null) {
+                    println("Error sending notification: ${throwable.message}")
+                    return@handle
+                }
                 val statusCode = response.status().code()
                 val responseBody = response.contentUtf8()
                 println("Response status: $statusCode")
@@ -137,6 +86,17 @@ class FCMService(
                     ),
             )
         return objectMapper.writeValueAsString(fcmMessage)
+    }
+
+    private fun createRequestHeaders(): RequestHeaders {
+        return RequestHeaders.of(
+            HttpMethod.POST,
+            "/",
+            HttpHeaderNames.AUTHORIZATION,
+            "Bearer ${getAccessToken()}",
+            HttpHeaderNames.CONTENT_TYPE,
+            MediaType.JSON_UTF_8
+        )
     }
 
     private fun getAccessToken(): String? {

@@ -23,26 +23,4 @@ data class FCMTokenCollection(
                 ),
             )
     }
-
-    fun addToken(
-        token: String,
-        accessedAt: LocalDateTime,
-    ) {
-        tokens.add(FCMTokenInfo(token, accessedAt))
-    }
-
-    fun updateToken(
-        token: String,
-        accessedAt: LocalDateTime,
-    ) {
-        tokens
-            .stream()
-            .filter { it.token == token }
-            .findFirst()
-            .ifPresent { it.accessedAt = accessedAt }
-    }
-
-    fun removeToken(token: String) {
-        tokens.removeIf { it.token == token }
-    }
 }
