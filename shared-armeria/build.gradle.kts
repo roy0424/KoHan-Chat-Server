@@ -23,6 +23,7 @@ dependencies {
 
     api(libs.armeria.kotlin)
     api(libs.armeria.grpc)
+    api(libs.armeria.grpc.kotlin)
 
     api(libs.grpc.stub)
     api(libs.grpc.protobuf)

@@ -9,3 +9,4 @@ spring:
 kohan:
   file:
     savePath: ${FILE_SAVE_PATH}
+    profileExtensions: jpg

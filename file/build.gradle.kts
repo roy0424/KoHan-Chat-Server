@@ -7,4 +7,5 @@ plugins {
 
 dependencies {
     implementation(project(":shared-spring"))
+    implementation(libs.thumbnailator)
 }

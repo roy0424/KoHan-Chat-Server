@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
-
 @Configuration
 @EnableMongoAuditing
 @EnableTransactionManagement
@@ -19,9 +18,9 @@ class MongoConfig {
         MongoTransactionManager(mongoTemplate.mongoDatabaseFactory)
 
     @Bean
-    fun mongodArguments(): MongodArguments {
-        return MongodArguments.builder()
+    fun mongodArguments(): MongodArguments =
+        MongodArguments
+            .builder()
             .replication(Storage.of("test", 10))
             .build()
-    }
 }

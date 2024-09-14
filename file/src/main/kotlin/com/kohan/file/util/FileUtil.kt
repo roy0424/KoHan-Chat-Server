@@ -1,38 +1,90 @@
 package com.kohan.file.util
 
 import com.kohan.file.collection.file.FileCollection
-import com.kohan.shared.armeria.authentication.v1.Authentication.UserDto
-import com.kohan.shared.armeria.file.v1.UploadFile.UploadFileVO
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileOutputStream
-import java.io.FileWriter
-import java.util.UUID
-import org.bson.types.ObjectId
+import com.kohan.file.repository.FileRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.coobird.thumbnailator.Thumbnails
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-
+import java.io.File
+import java.io.InputStream
+import java.nio.file.Files
+import javax.imageio.ImageIO
 
 @Component
 class FileUtil(
     @Value("\${kohan.file.savePath}")
-    private val savePath: String
+    private val savePath: String,
+    @Value("\${kohan.file.profileExtensions}")
+    private val profileExtension: String,
+    private val fileRepository: FileRepository,
 ) {
-    fun toFileCollection(uploadFileVO: UploadFileVO): FileCollection{
-        return FileCollection(
-            fileName = UUID.randomUUID().toString(),
-            originalFileName = uploadFileVO.fileName,
-            extension = uploadFileVO.extension,
-            fileSize = uploadFileVO.fileContent.size(),
-            uploadChatRoomKey = ObjectId(uploadFileVO.roomKey),
-            uploadUserKey = ObjectId(uploadFileVO.userKey),
-        )
+    suspend fun uploadFile(
+        fileCollection: FileCollection,
+        inputStream: InputStream,
+    ): FileCollection {
+        CoroutineScope(Dispatchers.IO).launch {
+            saveByteArrayToFile(
+                fileCollection.fileName,
+                inputStream,
+            )
+        }
+
+        val saved =
+            withContext(Dispatchers.IO) {
+                fileRepository.save(fileCollection)
+            }
+
+        return saved
     }
 
-    fun saveByteArrayToFile(fileName: String, fileContent: ByteArray){
-        val newFile = File(savePath, fileName)
-        FileOutputStream(newFile).use{
-            it.write(fileContent)
+    suspend fun uploadProfile(
+        fileCollection: FileCollection,
+        inputStream: InputStream,
+    ): FileCollection {
+        CoroutineScope(Dispatchers.IO).launch {
+            saveCompressedImage(fileCollection.fileName, profileExtension, inputStream)
         }
+
+        val saved =
+            withContext(Dispatchers.IO) {
+                fileRepository.save(fileCollection)
+            }
+
+        return saved
+    }
+
+    protected fun saveByteArrayToFile(
+        fileName: String,
+        inputStream: InputStream,
+    ) {
+        val newFile = File(savePath, fileName)
+        inputStream.use {
+            Files.copy(it, newFile.toPath())
+        }
+    }
+
+    protected fun saveCompressedImage(
+        fileName: String,
+        profileExtension: String,
+        inputStream: InputStream,
+    ) {
+        val newProfile = File(savePath, fileName)
+        val image = inputStream.use(ImageIO::read)
+
+        Thumbnails
+            .of(image)
+            .scale(1.0)
+            .outputQuality(0.5)
+            .outputFormat(profileExtension)
+            .toFile(newProfile)
+
+        val savedFile = File(savePath, "$fileName.$profileExtension")
+
+        // remove extension
+        savedFile.renameTo(newProfile)
     }
 }

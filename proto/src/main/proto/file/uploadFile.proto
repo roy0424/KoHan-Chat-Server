@@ -10,10 +10,16 @@ message UploadFileVO {
   string userKey = 5;
 }
 
+message UploadProfileVO{
+  bytes fileContent = 1;
+  string userKey = 2;
+}
+
 message UploadFileDTO {
   string fileKey = 1;
 }
 
 service FileUploadService {
   rpc upload(UploadFileVO) returns (UploadFileDTO) {}
+  rpc uploadProfile(UploadProfileVO) returns (UploadFileDTO) {}
 }

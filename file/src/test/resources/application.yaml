@@ -1,0 +1,4 @@
+kohan:
+  file:
+    savePath: "/tmp"
+    profileExtensions: jpg

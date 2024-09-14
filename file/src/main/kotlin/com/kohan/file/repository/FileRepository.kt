@@ -4,4 +4,4 @@ import com.kohan.file.collection.file.FileCollection
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 
-interface FileRepository: MongoRepository<FileCollection, ObjectId>
+interface FileRepository : MongoRepository<FileCollection, ObjectId>
