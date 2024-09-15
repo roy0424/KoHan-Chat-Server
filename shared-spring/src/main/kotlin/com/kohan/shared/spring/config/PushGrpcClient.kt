@@ -12,10 +12,9 @@ class PushGrpcClient(
     private val port: Int,
 ) {
     @Bean
-    fun initPushGrpcClient(): FCMTokenServiceBlockingStub {
-        return GrpcClients.newClient(
+    fun initPushGrpcClient(): FCMTokenServiceBlockingStub =
+        GrpcClients.newClient(
             "gproto+http://localhost:$port/grpc/v1/",
-            FCMTokenServiceBlockingStub::class.java
+            FCMTokenServiceBlockingStub::class.java,
         )
-    }
 }

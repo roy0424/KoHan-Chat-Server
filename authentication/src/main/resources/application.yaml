@@ -7,6 +7,12 @@ spring:
       - mongo
     active: prod
 
+armeria:
+    ports:
+    - port: ${AUTHENTICATION_PORT}
+      protocols:
+        - HTTP
+
 kohan:
   authentication:
     token:

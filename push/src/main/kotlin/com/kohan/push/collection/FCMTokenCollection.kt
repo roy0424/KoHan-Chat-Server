@@ -6,7 +6,6 @@ import com.kohan.shared.spring.mongo.collection.base.BaseCollection
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
 
 @Document("fcm_tokens")
 data class FCMTokenCollection(

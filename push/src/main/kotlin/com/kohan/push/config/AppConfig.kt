@@ -27,7 +27,6 @@ class AppConfig {
                     .enableUnframedRequests(true)
                     .build(),
             )
-
             serverBuilder.serviceUnder("/docs", DocService())
             serverBuilder.decorator(LoggingService.newDecorator())
             serverBuilder.accessLogWriter(AccessLogWriter.combined(), false)

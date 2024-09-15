@@ -7,12 +7,10 @@ import org.springframework.scheduling.annotation.Scheduled
 
 @Configuration
 class SchedulerConfig(
-    private val fcmTokenCleanupScheduler: FCMTokenCleanupScheduler
+    private val fcmTokenCleanupScheduler: FCMTokenCleanupScheduler,
 ) {
     @Bean
-    fun tokenCleanupTask(): Runnable {
-        return Runnable { fcmTokenCleanupScheduler.deleteExpiredTokens() }
-    }
+    fun tokenCleanupTask(): Runnable = Runnable { fcmTokenCleanupScheduler.deleteExpiredTokens() }
 
     @Scheduled(cron = "0 0 0 * * ?")
     fun scheduleTokenCleanupTask() {

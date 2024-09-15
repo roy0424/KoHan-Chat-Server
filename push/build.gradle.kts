@@ -10,7 +10,7 @@ dependencies {
     implementation(libs.firebase.admin) {
         exclude(
             group = "commons-logging",
-            module = "commons-logging"
+            module = "commons-logging",
         )
     }
 }

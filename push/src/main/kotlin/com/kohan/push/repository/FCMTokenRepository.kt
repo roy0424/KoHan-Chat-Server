@@ -1,9 +1,9 @@
 package com.kohan.push.repository
 
 import com.kohan.push.collection.FCMTokenCollection
-import java.time.LocalDateTime
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
+import java.time.LocalDateTime
 
 interface FCMTokenRepository : MongoRepository<FCMTokenCollection, ObjectId> {
     fun findByUserId(userId: ObjectId): FCMTokenCollection?

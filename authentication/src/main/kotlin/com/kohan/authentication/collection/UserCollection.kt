@@ -30,4 +30,8 @@ data class UserCollection(
             .setNickname(nickname)
             .setProfileImageUrl(profileImageUrl)
             .build()
+
+    fun removeToken(token: String) {
+        tokenInfos.removeIf { it.token == token }
+    }
 }

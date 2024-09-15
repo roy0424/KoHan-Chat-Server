@@ -32,14 +32,15 @@ class FCMService(
         image: String?,
         chatRoomId: String,
     ) {
-        val fcmMessage = makeFCMMessage(
-            token = token,
-            topic = topic,
-            title = title,
-            body = body,
-            image = image,
-            data = mapOf("chatRoomId" to chatRoomId),
-        )
+        val fcmMessage =
+            makeFCMMessage(
+                token = token,
+                topic = topic,
+                title = title,
+                body = body,
+                image = image,
+                data = mapOf("chatRoomId" to chatRoomId),
+            )
         val webClient = WebClient.builder(apiUrl).build()
         val headers = createRequestHeaders()
         val request = HttpRequest.of(headers, HttpData.ofUtf8(fcmMessage))
@@ -88,16 +89,15 @@ class FCMService(
         return objectMapper.writeValueAsString(fcmMessage)
     }
 
-    private fun createRequestHeaders(): RequestHeaders {
-        return RequestHeaders.of(
+    private fun createRequestHeaders(): RequestHeaders =
+        RequestHeaders.of(
             HttpMethod.POST,
             "/",
             HttpHeaderNames.AUTHORIZATION,
             "Bearer ${getAccessToken()}",
             HttpHeaderNames.CONTENT_TYPE,
-            MediaType.JSON_UTF_8
+            MediaType.JSON_UTF_8,
         )
-    }
 
     private fun getAccessToken(): String? {
         val serviceAccount = FileInputStream(firebaseConfigPath)

@@ -7,6 +7,12 @@ spring:
       - mongo
     active: prod
 
+armeria:
+  ports:
+    - port: ${PUSH_PORT}
+      protocols:
+        - HTTP
+
 kohan:
   push:
     firebase:
