@@ -1,0 +1,5 @@
+kohan:
+  authentication:
+    port: ${AUTHENTICATION_PORT}
+  push:
+    port: ${PUSH_PORT}
