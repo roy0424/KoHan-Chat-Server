@@ -8,6 +8,7 @@ import com.linecorp.armeria.server.logging.LoggingService
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.time.Duration
 
 @Configuration
 class AppConfig {
@@ -19,12 +20,14 @@ class AppConfig {
                 GrpcService
                     .builder()
                     .addService(uploadFileServiceImpl)
-                    .enableUnframedRequests(true)
+                    .enableUnframedRequests(false)
+                    .useClientTimeoutHeader(false)
                     .build(),
             )
-
             serverBuilder.serviceUnder("/docs", DocService())
             serverBuilder.decorator(LoggingService.newDecorator())
             serverBuilder.accessLogWriter(AccessLogWriter.combined(), false)
+            serverBuilder.requestTimeout(Duration.ZERO)
+            serverBuilder.maxRequestLength(Long.MAX_VALUE)
         }
 }

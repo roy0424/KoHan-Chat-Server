@@ -2,24 +2,42 @@ syntax = "proto3";
 
 package com.kohan.shared.armeria.file.v1;
 
-message UploadFileVO {
-  bytes fileContent = 1;
+message UploadFileInfo{
   string fileName = 2;
   string extension = 3;
   string roomKey = 4;
   string userKey = 5;
+  int64 totalSize = 6;
+}
+
+message UploadFileVO {
+  bytes fileContent = 1;
+  UploadFileInfo info = 2;
+}
+
+message UploadLageFileVO{
+  oneof data{
+    bytes chunk = 1;
+    UploadFileInfo info = 2;
+  }
 }
 
 message UploadProfileVO{
   bytes fileContent = 1;
   string userKey = 2;
+  optional int32 totalSize = 3;
 }
 
 message UploadFileDTO {
-  string fileKey = 1;
+  optional string fileKey = 1;
+  optional string message = 2;
+  optional int64 received = 3;
+  optional int64 total = 4;
 }
 
 service FileUploadService {
   rpc upload(UploadFileVO) returns (UploadFileDTO) {}
   rpc uploadProfile(UploadProfileVO) returns (UploadFileDTO) {}
+  rpc uploadLageFile(stream UploadLageFileVO) returns (stream UploadFileDTO) {}
+  rpc uploadLageImage(stream UploadLageFileVO) returns (stream UploadFileDTO) {}
 }

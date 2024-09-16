@@ -1,7 +1,7 @@
 package com.kohan.file.collection.file
 
-import com.kohan.shared.armeria.file.v1.UploadFile.UploadFileVO
-import com.kohan.shared.armeria.file.v1.UploadFile.UploadProfileVO
+import com.kohan.shared.armeria.file.v1.UploadFile
+import com.kohan.shared.armeria.file.v1.UploadFile.UploadFileInfo
 import com.kohan.shared.spring.mongo.collection.base.BaseCollection
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.index.Indexed
@@ -29,18 +29,18 @@ class FileCollection(
     var uploadUserKey: ObjectId,
 ) : BaseCollection() {
     companion object {
-        fun to(uploadFileVO: UploadFileVO): FileCollection =
+        fun to(uploadFileInfo: UploadFileInfo): FileCollection =
             FileCollection(
                 fileName = UUID.randomUUID().toString(),
-                originalFileName = uploadFileVO.fileName,
-                extension = uploadFileVO.extension,
-                fileSize = uploadFileVO.fileContent.size().toLong(),
-                uploadChatRoomKey = ObjectId(uploadFileVO.roomKey),
-                uploadUserKey = ObjectId(uploadFileVO.userKey),
+                originalFileName = uploadFileInfo.fileName,
+                extension = uploadFileInfo.extension,
+                fileSize = uploadFileInfo.totalSize,
+                uploadChatRoomKey = ObjectId(uploadFileInfo.roomKey),
+                uploadUserKey = ObjectId(uploadFileInfo.userKey),
             )
 
         fun to(
-            uploadProfileVO: UploadProfileVO,
+            uploadProfileVO: UploadFile.UploadProfileVO,
             fileExtension: String,
         ): FileCollection =
             FileCollection(

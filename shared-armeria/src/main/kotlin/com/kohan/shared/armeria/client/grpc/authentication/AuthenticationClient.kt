@@ -8,15 +8,18 @@ import com.linecorp.armeria.client.grpc.GrpcClients
 import io.github.cdimascio.dotenv.dotenv
 
 object AuthenticationClient {
-    private val authenticationServiceFutureStub: AuthenticationServiceFutureStub = GrpcClients.newClient(
-        dotenv()["AUTHENTICATION_GRPC_ADDRESS"],
-        AuthenticationServiceFutureStub::class.java
-    )
+    private val authenticationServiceFutureStub: AuthenticationServiceFutureStub =
+        GrpcClients.newClient(
+            dotenv()["AUTHENTICATION_GRPC_ADDRESS"],
+            AuthenticationServiceFutureStub::class.java,
+        )
 
     fun getUserInfo(token: String): ListenableFuture<UserDto> {
-        val userToken = UserToken.newBuilder()
-            .setToken(token)
-            .build()
+        val userToken =
+            UserToken
+                .newBuilder()
+                .setToken(token)
+                .build()
 
         return authenticationServiceFutureStub.authenticateUser(userToken)
     }

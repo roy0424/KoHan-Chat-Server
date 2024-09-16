@@ -1,4 +1,10 @@
+spring:
+  profiles:
+    include:
+      - test-mongo
+    active: test
+
 kohan:
   file:
-    savePath: "/tmp"
+    savePath: C:\\Users\\eunho\\Desktop\\tmp
     profileExtensions: jpg

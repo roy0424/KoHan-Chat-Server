@@ -1,18 +1,13 @@
 package com.kohan.file.util
 
-import com.kohan.file.collection.file.FileCollection
-import com.kohan.file.repository.FileRepository
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.coobird.thumbnailator.Thumbnails
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.awt.image.BufferedImage
 import java.io.File
-import java.io.InputStream
-import java.nio.file.Files
-import javax.imageio.ImageIO
+import java.io.OutputStream
 
 @Component
 class FileUtil(
@@ -20,71 +15,35 @@ class FileUtil(
     private val savePath: String,
     @Value("\${kohan.file.profileExtensions}")
     private val profileExtension: String,
-    private val fileRepository: FileRepository,
 ) {
-    suspend fun uploadFile(
-        fileCollection: FileCollection,
-        inputStream: InputStream,
-    ): FileCollection {
-        CoroutineScope(Dispatchers.IO).launch {
-            saveByteArrayToFile(
-                fileCollection.fileName,
-                inputStream,
-            )
-        }
-
-        val saved =
-            withContext(Dispatchers.IO) {
-                fileRepository.save(fileCollection)
-            }
-
-        return saved
-    }
-
-    suspend fun uploadProfile(
-        fileCollection: FileCollection,
-        inputStream: InputStream,
-    ): FileCollection {
-        CoroutineScope(Dispatchers.IO).launch {
-            saveCompressedImage(fileCollection.fileName, profileExtension, inputStream)
-        }
-
-        val saved =
-            withContext(Dispatchers.IO) {
-                fileRepository.save(fileCollection)
-            }
-
-        return saved
-    }
-
-    protected fun saveByteArrayToFile(
-        fileName: String,
-        inputStream: InputStream,
+    suspend fun writeToFile(
+        byteArray: ByteArray,
+        outputStream: OutputStream,
     ) {
-        val newFile = File(savePath, fileName)
-        inputStream.use {
-            Files.copy(it, newFile.toPath())
+        withContext(Dispatchers.IO) {
+            outputStream.write(byteArray)
         }
     }
 
-    protected fun saveCompressedImage(
+    suspend fun saveCompressedImage(
         fileName: String,
-        profileExtension: String,
-        inputStream: InputStream,
+        image: BufferedImage,
     ) {
         val newProfile = File(savePath, fileName)
-        val image = inputStream.use(ImageIO::read)
+        withContext(Dispatchers.IO) {
+            Thumbnails
+                .of(image)
+                .scale(1.0)
+                .outputQuality(0.5)
+                .outputFormat(profileExtension)
+                .toFile(newProfile)
 
-        Thumbnails
-            .of(image)
-            .scale(1.0)
-            .outputQuality(0.5)
-            .outputFormat(profileExtension)
-            .toFile(newProfile)
+            val savedFile = File(savePath, "$fileName.$profileExtension")
 
-        val savedFile = File(savePath, "$fileName.$profileExtension")
-
-        // remove extension
-        savedFile.renameTo(newProfile)
+            // remove extension
+            savedFile.renameTo(newProfile)
+        }
     }
+
+    fun newFile(fileName: String): File = File(savePath, fileName)
 }
