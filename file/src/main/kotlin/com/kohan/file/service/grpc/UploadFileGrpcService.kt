@@ -6,9 +6,6 @@ import com.kohan.file.repository.FileRepository
 import com.kohan.file.util.FileUtil
 import com.kohan.shared.armeria.file.v1.FileUploadServiceGrpcKt
 import com.kohan.shared.armeria.file.v1.UploadFile
-import java.io.FileOutputStream
-import java.util.concurrent.CancellationException
-import javax.imageio.ImageIO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -21,19 +18,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.io.FileOutputStream
+import java.util.concurrent.CancellationException
+import javax.imageio.ImageIO
 
 @Service
 class UploadFileGrpcService(
     @Value("\${kohan.file.profileExtensions}")
     private val profileExtension: String,
-
     @Value("\${kohan.file.maxUploadFileSize}")
     private val maxUploadFileSize: Long,
-
     private val fileUtil: FileUtil,
     private val fileRepository: FileRepository,
 ) : FileUploadServiceGrpcKt.FileUploadServiceCoroutineImplBase() {
-
     override suspend fun upload(request: UploadFile.UploadFileVO): UploadFile.UploadFileDTO {
         val fileCollection = FileCollection.to(request.info)
 
@@ -105,9 +102,7 @@ class UploadFileGrpcService(
                 .build()
         }
 
-        fun isInit(): Boolean {
-            return ::fileCollection.isInitialized
-        }
+        fun isInit(): Boolean = ::fileCollection.isInitialized
 
         fun init(fileCollection: FileCollection) {
             this.fileCollection = fileCollection
@@ -176,7 +171,7 @@ class UploadFileGrpcService(
 
     private suspend fun FlowCollector<UploadFile.UploadFileDTO>.saveFileFromStreamFlow(
         requests: Flow<UploadFile.UploadLageFileVO>,
-        uploadingFile: UploadingFile
+        uploadingFile: UploadingFile,
     ) {
         requests.cancellable().collect { request ->
             try {
@@ -201,7 +196,7 @@ class UploadFileGrpcService(
     }
 
     private fun checkUploadInfo(request: UploadFile.UploadFileInfo) {
-        //todo: Validation
+        // todo: Validation
         if (request.totalSize > maxUploadFileSize) {
             throw IllegalStateException("The maximum upload size is $maxUploadFileSize Byte")
         }

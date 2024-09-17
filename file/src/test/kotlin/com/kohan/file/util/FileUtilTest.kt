@@ -131,16 +131,17 @@ class FileUtilTest
             }
 
         @Test
-        fun notSendingFileInfoTest() = runTest {
-            val testFile = ClassPathResource("DummyFiles/175mb.jpg").file
+        fun notSendingFileInfoTest() =
+            runTest {
+                val testFile = ClassPathResource("DummyFiles/175mb.jpg").file
 
-            assertThrows<StatusException> {
-                val client = createGrpcClient()
-                val request = createFileUploadFlow(testFile, null)
-                val responses = client.uploadLageFile(request)
-                handleUploadResponses(responses)
+                assertThrows<StatusException> {
+                    val client = createGrpcClient()
+                    val request = createFileUploadFlow(testFile, null)
+                    val responses = client.uploadLageFile(request)
+                    handleUploadResponses(responses)
+                }
             }
-        }
 
         private suspend fun uploadFile(
             file: File,
@@ -164,7 +165,7 @@ class FileUtilTest
             flow {
                 val chunkSize: Int = 1024 * 1024 * 16
 
-                if (initialUploadVO != null){
+                if (initialUploadVO != null) {
                     emit(initialUploadVO)
                 }
 
