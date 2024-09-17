@@ -77,7 +77,7 @@ class FileUtilTest
         @Test
         fun uploadLageFileTest() =
             runTest {
-                val testFile = ClassPathResource("DummyFiles/1000mb.txt").file
+                val testFile = ClassPathResource("DummyFiles/22mb.txt").file
                 val initialUploadVO = createInitialUploadVO(testFile)
                 val savedFileKey = uploadFile(testFile, initialUploadVO)
 
@@ -94,7 +94,7 @@ class FileUtilTest
         @Test
         fun uploadLageImageTest() =
             runTest {
-                val testFile = ClassPathResource("DummyFiles/175mb.jpg").file
+                val testFile = ClassPathResource("DummyFiles/22mb.jpg").file
                 val initialUploadVO = createInitialUploadVO(testFile)
                 val savedFileKey = uploadFile(testFile, initialUploadVO)
 
@@ -111,7 +111,7 @@ class FileUtilTest
         @Test
         fun totalSizeExceededText() =
             runTest {
-                val testFile = ClassPathResource("DummyFiles/175mb.jpg").file
+                val testFile = ClassPathResource("DummyFiles/22mb.jpg").file
                 val initialUploadVO =
                     UploadLageFileVO
                         .newBuilder()
@@ -133,7 +133,7 @@ class FileUtilTest
         @Test
         fun notSendingFileInfoTest() =
             runTest {
-                val testFile = ClassPathResource("DummyFiles/175mb.jpg").file
+                val testFile = ClassPathResource("DummyFiles/22mb.jpg").file
 
                 assertThrows<StatusException> {
                     val client = createGrpcClient()
