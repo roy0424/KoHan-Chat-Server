@@ -8,3 +8,4 @@ kohan:
   file:
     savePath: C:\\Users\\eunho\\Desktop\\tmp
     profileExtensions: jpg
+    maxUploadFileSize: 2147483648

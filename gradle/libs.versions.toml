@@ -4,7 +4,7 @@ spring-boot = "3.3.2"
 spring-dependency-management = "1.1.6"
 kafka = "3.7.0"
 kotlin = "1.9.23"
-kotlin-coroutine = "1.8.1"
+kotlin-coroutine = "1.9.0"
 bouncycastle = "1.78.1"
 micrometer = "1.13.0"
 netty = "4.1.110.Final"
@@ -19,7 +19,6 @@ ktlint = "1.3.1"
 dotenv = "6.4.2"
 thumbnailator = "0.4.20"
 embed-mongo = "4.16.1"
-tus = "1.0.0-3.0"
 
 [libraries.boms-armeria]
 module = "com.linecorp.armeria:armeria-bom"
@@ -177,6 +176,10 @@ version.ref = "embed-mongo"
 module = "de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x"
 version.ref = "embed-mongo"
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 599ebda (Reflecting and Max File Size Filter)
 [plugins]
 spring-boot = {id = "org.springframework.boot", version.ref = "spring-boot"}
 spring-dependency-management = {id = "io.spring.dependency-management", version.ref = "spring-dependency-management"}

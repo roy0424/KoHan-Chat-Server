@@ -8,6 +8,7 @@ import com.kohan.shared.armeria.file.v1.UploadFile.UploadFileInfo
 import com.kohan.shared.armeria.file.v1.UploadFile.UploadLageFileVO
 import com.linecorp.armeria.client.grpc.GrpcClients
 import com.linecorp.armeria.common.grpc.GrpcSerializationFormats
+import io.grpc.StatusException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -124,10 +125,22 @@ class FileUtilTest
                                 .setUserKey(ObjectId.get().toHexString()),
                         ).build()
 
-                assertThrows<IllegalStateException> {
+                assertThrows<StatusException> {
                     uploadFile(testFile, initialUploadVO)
                 }
             }
+
+        @Test
+        fun notSendingFileInfoTest() = runTest {
+            val testFile = ClassPathResource("DummyFiles/175mb.jpg").file
+
+            assertThrows<StatusException> {
+                val client = createGrpcClient()
+                val request = createFileUploadFlow(testFile, null)
+                val responses = client.uploadLageFile(request)
+                handleUploadResponses(responses)
+            }
+        }
 
         private suspend fun uploadFile(
             file: File,
@@ -146,12 +159,14 @@ class FileUtilTest
 
         private fun createFileUploadFlow(
             file: File,
-            initialUploadVO: UploadLageFileVO,
+            initialUploadVO: UploadLageFileVO?,
         ): Flow<UploadLageFileVO> =
             flow {
                 val chunkSize: Int = 1024 * 1024 * 16
 
-                emit(initialUploadVO)
+                if (initialUploadVO != null){
+                    emit(initialUploadVO)
+                }
 
                 withContext(Dispatchers.IO) {
                     FileInputStream(file).buffered()

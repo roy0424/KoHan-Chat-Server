@@ -6,24 +6,34 @@ import com.kohan.file.repository.FileRepository
 import com.kohan.file.util.FileUtil
 import com.kohan.shared.armeria.file.v1.FileUploadServiceGrpcKt
 import com.kohan.shared.armeria.file.v1.UploadFile
+import java.io.FileOutputStream
+import java.util.concurrent.CancellationException
+import javax.imageio.ImageIO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.io.FileOutputStream
-import javax.imageio.ImageIO
 
 @Service
 class UploadFileGrpcService(
     @Value("\${kohan.file.profileExtensions}")
     private val profileExtension: String,
+
+    @Value("\${kohan.file.maxUploadFileSize}")
+    private val maxUploadFileSize: Long,
+
     private val fileUtil: FileUtil,
     private val fileRepository: FileRepository,
 ) : FileUploadServiceGrpcKt.FileUploadServiceCoroutineImplBase() {
+
     override suspend fun upload(request: UploadFile.UploadFileVO): UploadFile.UploadFileDTO {
         val fileCollection = FileCollection.to(request.info)
 
@@ -69,15 +79,23 @@ class UploadFileGrpcService(
     }
 
     inner class UploadingFile(
-        private val fileCollection: FileCollection,
         private val suffixes: String = "",
     ) {
-        val newFile = fileUtil.newFile(fileCollection.fileName + suffixes)
-
         private var uploadedSize: Long = 0
 
-        private val totalSize = fileCollection.fileSize
-        private val fileOutputStream = FileOutputStream(newFile).buffered()
+        private lateinit var fileCollection: FileCollection
+
+        val newFile by lazy {
+            fileUtil.newFile(fileCollection.fileName + suffixes)
+        }
+
+        private val totalSize by lazy {
+            fileCollection.fileSize
+        }
+
+        private val fileOutputStream by lazy {
+            FileOutputStream(newFile).buffered()
+        }
 
         private val progressDTO = {
             UploadFile.UploadFileDTO
@@ -85,6 +103,14 @@ class UploadFileGrpcService(
                 .setReceived(uploadedSize)
                 .setTotal(totalSize)
                 .build()
+        }
+
+        fun isInit(): Boolean {
+            return ::fileCollection.isInitialized
+        }
+
+        fun init(fileCollection: FileCollection) {
+            this.fileCollection = fileCollection
         }
 
         suspend fun saveChunk(byteString: ByteString): UploadFile.UploadFileDTO {
@@ -122,66 +148,62 @@ class UploadFileGrpcService(
 
     override fun uploadLageFile(requests: Flow<UploadFile.UploadLageFileVO>): Flow<UploadFile.UploadFileDTO> =
         flow {
-            var uploadingFile: UploadingFile? = null
+            val uploadingFile = UploadingFile()
 
-            try {
-                requests.collect { request ->
-                    when {
-                        request.hasInfo() -> {
-                            uploadingFile = UploadingFile(FileCollection.to(request.info))
-                        }
-                        request.hasChunk() && uploadingFile != null -> {
-                            emit(uploadingFile!!.saveChunk(request.chunk))
-                        }
-                    }
-                }
-            } catch (e: IllegalStateException) {
-                emit(
-                    UploadFile.UploadFileDTO
-                        .newBuilder()
-                        .setMessage(e.message)
-                        .build(),
-                )
-            }
+            saveFileFromStreamFlow(requests, uploadingFile)
 
-            if (uploadingFile != null && uploadingFile!!.newFile.exists()) {
-                emit(uploadingFile!!.done())
+            if (uploadingFile.isInit() && uploadingFile.newFile.exists()) {
+                emit(uploadingFile.done())
             }
         }
 
     override fun uploadLageImage(requests: Flow<UploadFile.UploadLageFileVO>): Flow<UploadFile.UploadFileDTO> =
         flow {
-            var uploadingFile: UploadingFile? = null
+            val uploadingFile = UploadingFile(".tmp")
 
-            try {
-                requests.collect { request ->
-                    when {
-                        request.hasInfo() -> {
-                            uploadingFile = UploadingFile(FileCollection.to(request.info), ".tmp")
-                        }
+            saveFileFromStreamFlow(requests, uploadingFile)
 
-                        request.hasChunk() && uploadingFile != null -> {
-                            emit(uploadingFile!!.saveChunk(request.chunk))
-                        }
-                    }
-                }
-            } catch (e: IllegalStateException) {
-                emit(
-                    UploadFile.UploadFileDTO
-                        .newBuilder()
-                        .setMessage(e.message)
-                        .build(),
-                )
-            }
+            if (uploadingFile.isInit() && uploadingFile.newFile.exists()) {
+                val image = uploadingFile.newFile.inputStream().use(ImageIO::read)
+                fileUtil.saveCompressedImage(uploadingFile.newFile.name.split(".")[0], image)
 
-            if (uploadingFile != null && uploadingFile!!.newFile.exists()) {
-                val image = uploadingFile!!.newFile.inputStream().use(ImageIO::read)
-                fileUtil.saveCompressedImage(uploadingFile!!.newFile.name.split(".")[0], image)
-
-                val doneDTO = uploadingFile!!.done()
-                uploadingFile!!.newFile.delete()
+                val doneDTO = uploadingFile.done()
+                uploadingFile.newFile.delete()
 
                 emit(doneDTO)
             }
         }
+
+    private suspend fun FlowCollector<UploadFile.UploadFileDTO>.saveFileFromStreamFlow(
+        requests: Flow<UploadFile.UploadLageFileVO>,
+        uploadingFile: UploadingFile
+    ) {
+        requests.cancellable().collect { request ->
+            try {
+                when {
+                    request.hasInfo() -> {
+                        checkUploadInfo(request.info)
+                        uploadingFile.init(FileCollection.to(request.info))
+                    }
+
+                    request.hasChunk() && uploadingFile.isInit() -> {
+                        emit(uploadingFile.saveChunk(request.chunk))
+                    }
+
+                    request.hasChunk() && !uploadingFile.isInit() -> {
+                        throw IllegalStateException("Before upload a file, you must send file info.")
+                    }
+                }
+            } catch (e: IllegalStateException) {
+                currentCoroutineContext().cancel(CancellationException(e.message))
+            }
+        }
+    }
+
+    private fun checkUploadInfo(request: UploadFile.UploadFileInfo) {
+        //todo: Validation
+        if (request.totalSize > maxUploadFileSize) {
+            throw IllegalStateException("The maximum upload size is $maxUploadFileSize Byte")
+        }
+    }
 }
