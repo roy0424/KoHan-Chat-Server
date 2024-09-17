@@ -168,7 +168,6 @@ version.ref = "embed-mongo"
 module = "de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x"
 version.ref = "embed-mongo"
 
-
 [plugins]
 spring-boot = {id = "org.springframework.boot", version.ref = "spring-boot"}
 spring-dependency-management = {id = "io.spring.dependency-management", version.ref = "spring-dependency-management"}
