@@ -163,7 +163,7 @@ class FileUtilTest
             initialUploadVO: UploadLageFileVO?,
         ): Flow<UploadLageFileVO> =
             flow {
-                val chunkSize: Int = 1024 * 1024 * 16
+                val chunkSize: Int = 1024 * 16
 
                 if (initialUploadVO != null) {
                     emit(initialUploadVO)
