@@ -15,7 +15,7 @@ class FCMTokenInfo(
     companion object {
         fun to(fcmToken: FcmToken.RegisterFCMToken): FCMTokenInfo =
             FCMTokenInfo(
-                token = fcmToken.token,
+                token = fcmToken.fcmTokenInfo.token,
                 accessedAt = LocalDateTime.parse(fcmToken.accessedAt),
             )
     }

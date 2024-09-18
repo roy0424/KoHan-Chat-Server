@@ -21,11 +21,11 @@ class FCMTokenGrpcService(
     override suspend fun registerFCMToken(request: FcmToken.RegisterFCMToken): Empty {
         val fcmTokenCollection =
             withContext(Dispatchers.IO) {
-                fcmTokenRepository.findByUserId(ObjectId(request.userId))
+                fcmTokenRepository.findByUserId(ObjectId(request.fcmTokenInfo.userId))
             }?.let { collection ->
                 collection.tokens
                     .stream()
-                    .filter { it.token == request.token }
+                    .filter { it.token == request.fcmTokenInfo.token }
                     .findFirst()
                     .ifPresentOrElse(
                         { it.accessedAt = LocalDateTime.parse(request.accessedAt) },
@@ -40,7 +40,7 @@ class FCMTokenGrpcService(
     }
 
     @Transactional
-    override suspend fun unregisterFCMToken(request: FcmToken.UnRegisterFCMToken): Empty {
+    override suspend fun unregisterFCMToken(request: FcmToken.FCMTokenInfo): Empty {
         val fcmTokenCollection =
             withContext(Dispatchers.IO) {
                 fcmTokenRepository.findByUserId(ObjectId(request.userId))

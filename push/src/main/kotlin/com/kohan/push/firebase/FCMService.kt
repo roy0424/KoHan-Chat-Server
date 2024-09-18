@@ -3,6 +3,7 @@ package com.kohan.push.firebase
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.auth.oauth2.GoogleCredentials
 import com.kohan.push.dto.FCMMessage
+import com.kohan.push.dto.FCMMessageInfo
 import com.kohan.push.dto.Message
 import com.kohan.push.dto.Notification
 import com.linecorp.armeria.client.WebClient
@@ -24,23 +25,9 @@ class FCMService(
     private val firebaseConfigPath: String,
     private val objectMapper: ObjectMapper,
 ) {
-    fun sendNotification(
-        token: String? = null,
-        topic: String? = null,
-        title: String,
-        body: String,
-        image: String?,
-        chatRoomId: String,
-    ) {
+    fun sendNotification(fcmMessageInfo: FCMMessageInfo) {
         val fcmMessage =
-            makeFCMMessage(
-                token = token,
-                topic = topic,
-                title = title,
-                body = body,
-                image = image,
-                data = mapOf("chatRoomId" to chatRoomId),
-            )
+            makeFCMMessage(fcmMessageInfo)
         val webClient = WebClient.builder(apiUrl).build()
         val headers = createRequestHeaders()
         val request = HttpRequest.of(headers, HttpData.ofUtf8(fcmMessage))
@@ -60,30 +47,24 @@ class FCMService(
             }
     }
 
-    private fun makeFCMMessage(
-        token: String? = null,
-        topic: String? = null,
-        condition: String? = null,
-        title: String,
-        body: String,
-        image: String?,
-        data: Map<String, String>,
-    ): String {
+    private fun makeFCMMessage(fcmMessageInfo: FCMMessageInfo): String {
         val fcmMessage =
             FCMMessage(
                 validateOnly = false,
                 message =
                     Message(
-                        token = token,
-                        topic = topic,
-                        condition = condition,
+                        token = fcmMessageInfo.token,
+                        topic = fcmMessageInfo.topic,
                         notification =
                             Notification(
-                                title = title,
-                                body = body,
-                                image = image,
+                                title = fcmMessageInfo.title,
+                                body = fcmMessageInfo.body,
+                                image = fcmMessageInfo.image,
                             ),
-                        data = data,
+                        data =
+                            mapOf(
+                                "chatRoomId" to fcmMessageInfo.chatRoomId,
+                            ),
                     ),
             )
         return objectMapper.writeValueAsString(fcmMessage)

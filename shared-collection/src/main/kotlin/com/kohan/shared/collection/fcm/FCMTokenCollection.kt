@@ -16,7 +16,7 @@ data class FCMTokenCollection(
     companion object {
         fun to(fcmToken: FcmToken.RegisterFCMToken): FCMTokenCollection =
             FCMTokenCollection(
-                ObjectId(fcmToken.userId),
+                ObjectId(fcmToken.fcmTokenInfo.userId),
                 mutableListOf(
                     FCMTokenInfo.to(fcmToken),
                 ),

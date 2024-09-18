@@ -4,18 +4,17 @@ package com.kohan.proto.push.v1;
 
 import "google/protobuf/empty.proto";
 
-message RegisterFCMToken {
+message FCMTokenInfo {
   string userId = 1;
   string token = 2;
-  string accessedAt = 3;
 }
 
-message UnRegisterFCMToken {
-  string userId = 1;
-  string token = 2;
+message RegisterFCMToken {
+  FCMTokenInfo fcmTokenInfo = 1;
+  string accessedAt = 2;
 }
 
 service FCMTokenService {
   rpc registerFCMToken(RegisterFCMToken) returns (google.protobuf.Empty) {}
-  rpc unregisterFCMToken(UnRegisterFCMToken) returns (google.protobuf.Empty) {}
+  rpc unregisterFCMToken(FCMTokenInfo) returns (google.protobuf.Empty) {}
 }

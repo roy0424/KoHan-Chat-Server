@@ -9,8 +9,8 @@ import com.kohan.authentication.vo.RegistrationToken
 import com.kohan.authentication.vo.SignIn
 import com.kohan.authentication.vo.SignUp
 import com.kohan.proto.push.v1.FCMTokenServiceGrpc.FCMTokenServiceBlockingStub
+import com.kohan.proto.push.v1.FcmToken.FCMTokenInfo
 import com.kohan.proto.push.v1.FcmToken.RegisterFCMToken
-import com.kohan.proto.push.v1.FcmToken.UnRegisterFCMToken
 import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
 import com.kohan.shared.collection.user.UserCollection
 import com.kohan.shared.collection.user.item.AccessDeviceInfo
@@ -95,9 +95,13 @@ class UserService(
         val registerFCMToken =
             RegisterFCMToken
                 .newBuilder()
-                .setToken(registrationToken.registrationToken)
-                .setUserId(user.id.toString())
-                .setAccessedAt(LocalDateTime.now().toString())
+                .setFcmTokenInfo(
+                    FCMTokenInfo
+                        .newBuilder()
+                        .setUserId(user.id.toString())
+                        .setToken(registrationToken.registrationToken)
+                        .build(),
+                ).setAccessedAt(LocalDateTime.now().toString())
                 .build()
         pushGrpcClient.registerFCMToken(registerFCMToken)
     }
@@ -118,7 +122,7 @@ class UserService(
         userRepository.save(user)
 
         val unRegisterFCMToken =
-            UnRegisterFCMToken
+            FCMTokenInfo
                 .newBuilder()
                 .setToken(registrationToken.registrationToken)
                 .setUserId(user.id.toString())
