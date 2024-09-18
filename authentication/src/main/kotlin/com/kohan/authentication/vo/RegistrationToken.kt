@@ -2,7 +2,7 @@ package com.kohan.authentication.vo
 
 import jakarta.validation.constraints.NotBlank
 
-data class RegistrationToken(
+class RegistrationToken(
     @field:NotBlank(message = "please enter token")
     val token: String,
     @field:NotBlank(message = "please enter registration token")
