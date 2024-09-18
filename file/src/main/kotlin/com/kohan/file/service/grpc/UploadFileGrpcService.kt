@@ -32,7 +32,7 @@ class UploadFileGrpcService(
     private val fileRepository: FileRepository,
 ) : FileUploadServiceGrpcKt.FileUploadServiceCoroutineImplBase() {
     override suspend fun uploadProfile(request: UploadFile.UploadProfile): UploadFile.UploadFileDTO {
-        val fileCollection = FileCollection.to(request, profileExtension)
+        val fileCollection = FileCollection.of(request, profileExtension)
 
         CoroutineScope(Dispatchers.IO).launch {
             val image = request.fileContent.newInput().use(ImageIO::read)
@@ -116,7 +116,7 @@ class UploadFileGrpcService(
         }
     }
 
-    override fun uploadLageFile(requests: Flow<UploadFile.UploadLageFile>): Flow<UploadFile.UploadFileDTO> =
+    override fun uploadLargeFile(requests: Flow<UploadFile.UploadLargeFile>): Flow<UploadFile.UploadFileDTO> =
         flow {
             val uploadingFile = UploadingFile()
 
@@ -127,7 +127,7 @@ class UploadFileGrpcService(
             }
         }
 
-    override fun uploadLageImage(requests: Flow<UploadFile.UploadLageFile>): Flow<UploadFile.UploadFileDTO> =
+    override fun uploadLargeImage(requests: Flow<UploadFile.UploadLargeFile>): Flow<UploadFile.UploadFileDTO> =
         flow {
             val uploadingFile = UploadingFile(".tmp")
 
@@ -145,7 +145,7 @@ class UploadFileGrpcService(
         }
 
     private suspend fun FlowCollector<UploadFile.UploadFileDTO>.saveFileFromStreamFlow(
-        requests: Flow<UploadFile.UploadLageFile>,
+        requests: Flow<UploadFile.UploadLargeFile>,
         uploadingFile: UploadingFile,
     ) {
         requests.cancellable().collect { request ->
@@ -153,7 +153,7 @@ class UploadFileGrpcService(
                 when {
                     request.hasInfo() -> {
                         checkUploadInfo(request.info)
-                        uploadingFile.init(FileCollection.to(request.info))
+                        uploadingFile.init(FileCollection.of(request.info))
                     }
 
                     request.hasChunk() && uploadingFile.isInit() -> {

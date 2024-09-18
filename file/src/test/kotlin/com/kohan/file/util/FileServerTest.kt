@@ -2,6 +2,8 @@ package com.kohan.file.util
 
 import com.google.protobuf.ByteString
 import com.kohan.file.repository.FileRepository
+import com.kohan.proto.file.v1.DownloadFile
+import com.kohan.proto.file.v1.FileDownloadServiceGrpcKt
 import com.kohan.proto.file.v1.FileUploadServiceGrpcKt
 import com.kohan.proto.file.v1.UploadFile
 import com.linecorp.armeria.client.grpc.GrpcClients
@@ -29,13 +31,14 @@ import java.io.FileInputStream
 import java.time.Duration
 import java.util.UUID
 import javax.imageio.ImageIO
+import kotlin.test.assertEquals
 
 @SpringBootTest
 @DirtiesContext
 @AutoConfigureDataMongo
 @EnableAutoConfiguration
 @DisabledOnOs(OS.LINUX, disabledReason = "Not working with github action")
-class FileUtilTest
+class FileServerTest
     @Autowired
     constructor(
         private val fileUtil: FileUtil,
@@ -96,7 +99,7 @@ class FileUtilTest
             runTest {
                 val testFile = ClassPathResource("DummyFiles/22mb.jpg").file
                 val initialUploadVO =
-                    UploadFile.UploadLageFile
+                    UploadFile.UploadLargeFile
                         .newBuilder()
                         .setInfo(
                             UploadFile.UploadFileInfo
@@ -119,33 +122,74 @@ class FileUtilTest
                 val testFile = ClassPathResource("/DummyFiles/22mb.jpg").file
 
                 assertThrows<StatusException> {
-                    val client = createGrpcClient()
+                    val client = createGrpcClient<FileUploadServiceGrpcKt.FileUploadServiceCoroutineStub>()
                     val request = createFileUploadFlow(testFile, null)
-                    val responses = client.uploadLageFile(request)
+                    val responses = client.uploadLargeFile(request)
                     handleUploadResponses(responses)
                 }
+            }
+
+        @Test
+        fun downloadTest() =
+            runTest {
+                val testFile = ClassPathResource("DummyFiles/test.txt").file
+                val initialUploadVO = createInitialUploadVO(testFile)
+                val savedFileKey = uploadFile(testFile, false, initialUploadVO)
+
+                val request =
+                    DownloadFile.FileDownloadRequest
+                        .newBuilder()
+                        .setFileKey(savedFileKey)
+                        .setChunkSize(1024)
+                        .build()
+
+                val client = createGrpcClient<FileDownloadServiceGrpcKt.FileDownloadServiceCoroutineStub>()
+                val downloadFile = fileUtil.newFile(testFile.name + "_down")
+                lateinit var fileInfo: DownloadFile.DownloadFileInfo
+                client.downloadFile(request).collect { response ->
+                    downloadFile.outputStream().buffered().use { outputStream ->
+                        when {
+                            response.hasInfo() -> {
+                                fileInfo = response.info
+
+                                assertEquals(testFile.name, response.info.fileName)
+                                assertEquals(testFile.extension, response.info.extension)
+                                assertEquals(testFile.length(), response.info.totalSize)
+                            }
+
+                            response.hasFileData() -> {
+                                println("${response.fileData.sendByte} / ${fileInfo.totalSize}")
+                                outputStream.write(response.fileData.chunk.toByteArray())
+                            }
+                        }
+                    }
+                }
+                assertEquals(
+                    testFile.readBytes().toString(Charsets.UTF_8),
+                    downloadFile.readBytes().toString(Charsets.UTF_8),
+                )
             }
 
         private suspend fun uploadFile(
             file: File,
             imageCompressing: Boolean,
-            initialUploadVO: UploadFile.UploadLageFile,
+            initialUploadVO: UploadFile.UploadLargeFile,
         ): String {
-            val client = createGrpcClient()
+            val client = createGrpcClient<FileUploadServiceGrpcKt.FileUploadServiceCoroutineStub>()
             val request = createFileUploadFlow(file, initialUploadVO)
             val responses =
                 if (imageCompressing) {
-                    client.uploadLageImage(request)
+                    client.uploadLargeImage(request)
                 } else {
-                    client.uploadLageFile(request)
+                    client.uploadLargeFile(request)
                 }
             return handleUploadResponses(responses)
         }
 
         private fun createFileUploadFlow(
             file: File,
-            initialUploadVO: UploadFile.UploadLageFile?,
-        ): Flow<UploadFile.UploadLageFile> =
+            initialUploadVO: UploadFile.UploadLargeFile?,
+        ): Flow<UploadFile.UploadLargeFile> =
             flow {
                 val chunkSize: Int = 1024 * 1024 * 16
 
@@ -186,7 +230,7 @@ class FileUtilTest
             return savedFileKey
         }
 
-        private fun createGrpcClient(): FileUploadServiceGrpcKt.FileUploadServiceCoroutineStub =
+        private inline fun <reified T : Any> createGrpcClient(): T =
             GrpcClients
                 .builder("gproto+http://127.0.0.1:8080/grpc/v1/")
                 .serializationFormat(GrpcSerializationFormats.PROTO)
@@ -194,10 +238,10 @@ class FileUtilTest
                 .writeTimeout(Duration.ZERO)
                 .maxRequestMessageLength(-1)
                 .maxResponseMessageLength(-1)
-                .build(FileUploadServiceGrpcKt.FileUploadServiceCoroutineStub::class.java)
+                .build(T::class.java)
 
-        private fun createInitialUploadVO(file: File): UploadFile.UploadLageFile =
-            UploadFile.UploadLageFile
+        private fun createInitialUploadVO(file: File): UploadFile.UploadLargeFile =
+            UploadFile.UploadLargeFile
                 .newBuilder()
                 .setInfo(
                     UploadFile.UploadFileInfo
@@ -209,8 +253,8 @@ class FileUtilTest
                         .setUserKey(ObjectId.get().toHexString()),
                 ).build()
 
-        private fun createChunkUploadVO(chunk: ByteArray): UploadFile.UploadLageFile =
-            UploadFile.UploadLageFile
+        private fun createChunkUploadVO(chunk: ByteArray): UploadFile.UploadLargeFile =
+            UploadFile.UploadLargeFile
                 .newBuilder()
                 .setChunk(ByteString.copyFrom(chunk))
                 .build()

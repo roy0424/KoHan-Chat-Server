@@ -29,7 +29,7 @@ class FileCollection(
     var uploadUserKey: ObjectId,
 ) : BaseCollection() {
     companion object {
-        fun to(uploadFileInfo: UploadFileInfo): FileCollection =
+        fun of(uploadFileInfo: UploadFileInfo): FileCollection =
             FileCollection(
                 fileName = UUID.randomUUID().toString(),
                 originalFileName = uploadFileInfo.fileName,
@@ -39,7 +39,7 @@ class FileCollection(
                 uploadUserKey = ObjectId(uploadFileInfo.userKey),
             )
 
-        fun to(
+        fun of(
             uploadProfileVO: UploadFile.UploadProfile,
             fileExtension: String,
         ): FileCollection =

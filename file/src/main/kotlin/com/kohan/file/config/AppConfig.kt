@@ -1,5 +1,6 @@
 package com.kohan.file.config
 
+import com.kohan.file.service.grpc.DownloadFileGrpcService
 import com.kohan.file.service.grpc.UploadFileGrpcService
 import com.linecorp.armeria.server.docs.DocService
 import com.linecorp.armeria.server.grpc.GrpcService
@@ -13,13 +14,17 @@ import java.time.Duration
 @Configuration
 class AppConfig {
     @Bean
-    fun armeriaServerConfigurator(uploadFileServiceImpl: UploadFileGrpcService): ArmeriaServerConfigurator =
+    fun armeriaServerConfigurator(
+        uploadFileGrpcService: UploadFileGrpcService,
+        downloadFileGrpcService: DownloadFileGrpcService,
+    ): ArmeriaServerConfigurator =
         ArmeriaServerConfigurator { serverBuilder ->
             serverBuilder.service(
                 "prefix:/grpc/v1",
                 GrpcService
                     .builder()
-                    .addService(uploadFileServiceImpl)
+                    .addService(uploadFileGrpcService)
+                    .addService(downloadFileGrpcService)
                     .enableUnframedRequests(false)
                     .useClientTimeoutHeader(false)
                     .build(),

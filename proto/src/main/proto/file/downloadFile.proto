@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package com.kohan.proto.file.v1;
+
+message DownloadFileInfo{
+  string fileName = 1;
+  string extension = 2;
+  string roomKey = 3;
+  string userKey = 4;
+  int64 totalSize = 5;
+}
+
+message FileData{
+  bytes chunk = 1;
+  int64 sendByte = 2;
+}
+
+message FileDownloadRequest{
+  string fileKey = 1;
+  int32 chunkSize = 2;
+}
+
+message FileDownloadResponse{
+  oneof data{
+    FileData fileData = 1;
+    DownloadFileInfo info = 2;
+  }
+}
+
+
+service FileDownloadService {
+  rpc downloadFile(FileDownloadRequest) returns (stream FileDownloadResponse) {}
+}
