@@ -9,11 +9,3 @@ dependencies {
     implementation(project(":shared-spring"))
     implementation(libs.thumbnailator)
 }
-
-sourceSets {
-    test {
-        resources {
-            setSrcDirs(listOf("src/test/resources"))
-        }
-    }
-}

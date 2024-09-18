@@ -9,21 +9,29 @@ import com.kohan.shared.armeria.file.v1.UploadFile.UploadLageFileVO
 import com.linecorp.armeria.client.grpc.GrpcClients
 import com.linecorp.armeria.common.grpc.GrpcSerializationFormats
 import io.grpc.StatusException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.bson.types.ObjectId
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.core.io.ClassPathResource
 import org.springframework.test.annotation.DirtiesContext
-import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.net.URI
+import java.net.URL
+import java.nio.channels.Channels
 import java.time.Duration
 import java.util.UUID
 import javax.imageio.ImageIO
@@ -38,152 +46,186 @@ class FileUtilTest
         private val fileUtil: FileUtil,
         private val fileRepository: FileRepository,
     ) {
+        companion object {
+            lateinit var testTxt: File
+            lateinit var test22mbTxt: File
+
+            lateinit var testJPG: File
+            lateinit var test22mbJPG: File
+
+            @BeforeAll
+            @JvmStatic
+            internal fun setUp(
+                @Autowired fileUtil: FileUtil,
+            ) {
+                testTxt = fileUtil.newFile("testTxt")
+                test22mbTxt = fileUtil.newFile("test22mbTxt")
+                testJPG = fileUtil.newFile("testJPG")
+                test22mbJPG = fileUtil.newFile("test22mbJPG")
+
+                downloadFile(
+                    URI
+                        .create(
+                            "https://raw.githubusercontent.com/patcher454/KoHan-Chat-Server/file-server/file/src/test/resources/DummyFiles/test.txt",
+                        ).toURL(),
+                    testTxt,
+                )
+                downloadFile(
+                    URI
+                        .create(
+                            "https://raw.githubusercontent.com/patcher454/KoHan-Chat-Server/file-server/file/src/test/resources/DummyFiles/22mb.txt",
+                        ).toURL(),
+                    test22mbTxt,
+                )
+                downloadFile(
+                    URI
+                        .create(
+                            "https://raw.githubusercontent.com/patcher454/KoHan-Chat-Server/file-server/file/src/test/resources/DummyFiles/test.jpg",
+                        ).toURL(),
+                    testJPG,
+                )
+                downloadFile(
+                    URI
+                        .create(
+                            "https://raw.githubusercontent.com/patcher454/KoHan-Chat-Server/file-server/file/src/test/resources/DummyFiles/22mb.jpg",
+                        ).toURL(),
+                    test22mbJPG,
+                )
+            }
+
+            @AfterAll
+            @JvmStatic
+            internal fun cleanUp() {
+                testTxt.delete()
+                test22mbTxt.delete()
+
+                testJPG.delete()
+                test22mbJPG.delete()
+            }
+
+            private fun downloadFile(
+                url: URL,
+                file: File,
+            ) {
+                url.openStream().use {
+                    Channels.newChannel(it).use { rbc ->
+                        FileOutputStream(file).use { fos ->
+                            fos.channel.transferFrom(rbc, 0, Long.MAX_VALUE)
+                        }
+                    }
+                }
+            }
+        }
+
         @Test
         fun uploadFileTest() =
             runTest {
-                val testFile = ClassPathResource("/DummyFiles/test.txt")
+                val testFile = testTxt
+                val testFileStream = testFile.inputStream()
                 val newFile = fileUtil.newFile(UUID.randomUUID().toString())
 
-                testFile.inputStream.buffered().use { testStream ->
-                    newFile.outputStream().buffered().use { newStream ->
-                        fileUtil.writeToFile(testStream.readBytes(), newStream)
-                    }
+                newFile.outputStream().buffered().use { stream ->
+                    fileUtil.writeToFile(testFileStream.readBytes(), stream)
                 }
 
-                testFile.inputStream.buffered().use { testStream ->
-                    assertEquals(
-                        testFile.inputStream.buffered().use { testStream.readBytes().toString(Charsets.UTF_8) },
-                        newFile.readBytes().toString(Charsets.UTF_8),
-                    )
-                }
+                assertEquals(
+                    testFile.readBytes().toString(Charsets.UTF_8),
+                    newFile.readBytes().toString(Charsets.UTF_8),
+                )
             }
 
         @Test
         fun saveCompressedImage() =
             runTest {
-                val testFile = ClassPathResource("/DummyFiles/test.jpg")
-                val image = testFile.inputStream.buffered().use(ImageIO::read)
+                val testFile = testJPG
+                val fileStream = testFile.inputStream()
+                val image = fileStream.use(ImageIO::read)
 
                 val newFileName = UUID.randomUUID().toString()
                 fileUtil.saveCompressedImage(newFileName, image)
 
-                testFile.inputStream.buffered().use { testStream ->
-                    val savedFile = fileUtil.newFile(newFileName)
-                    assertTrue(
-                        testStream.readBytes().size > savedFile.length(),
-                    )
-                }
+                val savedFile = fileUtil.newFile(newFileName)
+                assertTrue(
+                    testFile.length() > savedFile.length(),
+                )
             }
 
         @Test
         fun uploadLageFileTest() =
             runTest {
-                val testFile = ClassPathResource("/DummyFiles/22mb.txt")
-
-                val initialUploadVO =
-                    testFile.inputStream.buffered().use { testStream ->
-                        createInitialUploadVO(
-                            fileName = "22mb",
-                            fileExtension = "txt",
-                            fileSize = testStream.readBytes().size.toLong(),
-                        )
-                    }
-
-                val savedFileKey =
-                    testFile.inputStream.buffered().use { testStream ->
-                        uploadFile(testStream, false, initialUploadVO)
-                    }
+                val testFile = test22mbTxt
+                val initialUploadVO = createInitialUploadVO(testFile)
+                val savedFileKey = uploadFile(testFile, false, initialUploadVO)
 
                 assertTrue(savedFileKey != "")
 
                 val fileCollection = fileRepository.findById(ObjectId(savedFileKey))
                 assertTrue(fileCollection.isPresent)
 
-                testFile.inputStream.buffered().use { testStream ->
-                    val savedFile = fileUtil.newFile(fileCollection.get().fileName)
-                    assertTrue(savedFile.exists())
-                    assertTrue(savedFile.length() >= testStream.readBytes().size)
-                }
+                val savedFile = fileUtil.newFile(fileCollection.get().fileName)
+                assertTrue(savedFile.exists())
+                assertTrue(savedFile.length() >= testFile.length())
             }
 
         @Test
         fun uploadLageImageTest() =
             runTest {
-                val testFile = ClassPathResource("/DummyFiles/22mb.jpg")
-                val initialUploadVO =
-                    testFile.inputStream.buffered().use { testStream ->
-                        createInitialUploadVO(
-                            fileName = "22mb",
-                            fileExtension = "jpg",
-                            fileSize = testStream.readBytes().size.toLong(),
-                        )
-                    }
-
-                val savedFileKey =
-                    testFile.inputStream.buffered().use { testStream ->
-                        uploadFile(testStream, true, initialUploadVO)
-                    }
+                val testFile = test22mbJPG
+                val initialUploadVO = createInitialUploadVO(testFile)
+                val savedFileKey = uploadFile(testFile, true, initialUploadVO)
 
                 assertTrue(savedFileKey != "")
 
                 val fileCollection = fileRepository.findById(ObjectId(savedFileKey))
                 assertTrue(fileCollection.isPresent)
 
-                testFile.inputStream.buffered().use { testStream ->
-                    val savedFile = fileUtil.newFile(fileCollection.get().fileName)
-                    assertTrue(savedFile.exists())
-                    assertTrue(savedFile.length() < testStream.readBytes().size)
+                val savedFile = fileUtil.newFile(fileCollection.get().fileName)
+                assertTrue(savedFile.exists())
+                assertTrue(savedFile.length() < testFile.length())
+            }
+
+        @Test
+        fun notSendingFileInfoTest() =
+            runTest {
+                val testFile = test22mbJPG
+
+                assertThrows<StatusException> {
+                    val client = createGrpcClient()
+                    val request = createFileUploadFlow(testFile, null)
+                    val responses = client.uploadLageFile(request)
+                    handleUploadResponses(responses)
                 }
             }
 
         @Test
         fun totalSizeExceededText() =
             runTest {
-                val testFile = ClassPathResource("/DummyFiles/22mb.jpg")
+                val testFile = test22mbJPG
                 val initialUploadVO =
-                    testFile.inputStream.buffered().use { testStream ->
-                        UploadLageFileVO
-                            .newBuilder()
-                            .setInfo(
-                                UploadFileInfo
-                                    .newBuilder()
-                                    .setFileName("22mb")
-                                    .setExtension("jpg")
-                                    .setTotalSize(testStream.readBytes().size.toLong() - (1024 * 1024 * 32))
-                                    .setRoomKey(ObjectId.get().toHexString())
-                                    .setUserKey(ObjectId.get().toHexString()),
-                            ).build()
-                    }
+                    UploadLageFileVO
+                        .newBuilder()
+                        .setInfo(
+                            UploadFileInfo
+                                .newBuilder()
+                                .setFileName(testFile.name)
+                                .setExtension(testFile.extension)
+                                .setTotalSize(testFile.length() - (1024 * 1024 * 32))
+                                .setRoomKey(ObjectId.get().toHexString())
+                                .setUserKey(ObjectId.get().toHexString()),
+                        ).build()
 
-                testFile.inputStream.buffered().use { testStream ->
-                    assertThrows<StatusException> {
-                        uploadFile(testStream, false, initialUploadVO)
-                    }
-                }
-            }
-
-        @Test
-        fun notSendingFileInfoTest() =
-            runTest {
-                val testFile = ClassPathResource("/DummyFiles/22mb.jpg")
-
-                testFile.inputStream.buffered().use { testStream ->
-                    assertThrows<StatusException> {
-                        val client = createGrpcClient()
-                        val request = createFileUploadFlow(testStream, null)
-                        val responses = client.uploadLageFile(request)
-                        handleUploadResponses(responses)
-                    }
+                assertThrows<StatusException> {
+                    uploadFile(testFile, false, initialUploadVO)
                 }
             }
 
         private suspend fun uploadFile(
-            fileStream: BufferedInputStream,
+            file: File,
             imageCompressing: Boolean,
             initialUploadVO: UploadLageFileVO,
         ): String {
             val client = createGrpcClient()
-            val request = createFileUploadFlow(fileStream, initialUploadVO)
+            val request = createFileUploadFlow(file, initialUploadVO)
             val responses =
                 if (imageCompressing) {
                     client.uploadLageImage(request)
@@ -194,17 +236,19 @@ class FileUtilTest
         }
 
         private fun createFileUploadFlow(
-            fileStream: BufferedInputStream,
+            file: File,
             initialUploadVO: UploadLageFileVO?,
         ): Flow<UploadLageFileVO> =
             flow {
-                val chunkSize: Int = 1024 * 16
+                val chunkSize: Int = 1024 * 1024 * 16
 
                 if (initialUploadVO != null) {
                     emit(initialUploadVO)
                 }
 
-                fileStream.use { inputStream ->
+                withContext(Dispatchers.IO) {
+                    FileInputStream(file).buffered()
+                }.use { inputStream ->
                     val buffer = ByteArray(chunkSize)
                     var bytesRead: Int
 
@@ -245,19 +289,15 @@ class FileUtilTest
                 .maxResponseMessageLength(-1)
                 .build(FileUploadServiceGrpcKt.FileUploadServiceCoroutineStub::class.java)
 
-        private fun createInitialUploadVO(
-            fileName: String,
-            fileExtension: String,
-            fileSize: Long,
-        ): UploadLageFileVO =
+        private fun createInitialUploadVO(file: File): UploadLageFileVO =
             UploadLageFileVO
                 .newBuilder()
                 .setInfo(
                     UploadFileInfo
                         .newBuilder()
-                        .setFileName(fileName)
-                        .setExtension(fileExtension)
-                        .setTotalSize(fileSize)
+                        .setFileName(file.name)
+                        .setExtension(file.extension)
+                        .setTotalSize(file.length())
                         .setRoomKey(ObjectId.get().toHexString())
                         .setUserKey(ObjectId.get().toHexString()),
                 ).build()
