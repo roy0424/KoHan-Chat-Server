@@ -23,10 +23,10 @@ class FileCollection(
      *
      * If null, it's visible to everyone */
     @Indexed
-    var uploadChatRoomKey: ObjectId? = null,
+    var uploadChatRoomId: ObjectId? = null,
     /** upload user */
     @Indexed
-    var uploadUserKey: ObjectId,
+    var uploadUserId: ObjectId,
 ) : BaseCollection() {
     companion object {
         fun of(uploadFileInfo: UploadFileInfo): FileCollection =
@@ -35,8 +35,8 @@ class FileCollection(
                 originalFileName = uploadFileInfo.fileName,
                 extension = uploadFileInfo.extension,
                 fileSize = uploadFileInfo.totalSize,
-                uploadChatRoomKey = ObjectId(uploadFileInfo.roomKey),
-                uploadUserKey = ObjectId(uploadFileInfo.userKey),
+                uploadChatRoomId = ObjectId(uploadFileInfo.roomKey),
+                uploadUserId = ObjectId(uploadFileInfo.userKey),
             )
 
         fun of(
@@ -48,7 +48,7 @@ class FileCollection(
                 originalFileName = uploadProfileVO.userKey + LocalDateTime.now(),
                 extension = fileExtension,
                 fileSize = uploadProfileVO.fileContent.size().toLong(),
-                uploadUserKey = ObjectId(uploadProfileVO.userKey),
+                uploadUserId = ObjectId(uploadProfileVO.userKey),
             )
     }
 }

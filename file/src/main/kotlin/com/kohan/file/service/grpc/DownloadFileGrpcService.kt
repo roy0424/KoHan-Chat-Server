@@ -56,7 +56,7 @@ class DownloadFileGrpcService(
         }
 
     private fun createInitialResponse(fileCollection: FileCollection): DownloadFile.FileDownloadResponse {
-        val uploadChatRoomKey = fileCollection.uploadChatRoomKey
+        val uploadChatRoomKey = fileCollection.uploadChatRoomId
 
         return DownloadFile.FileDownloadResponse
             .newBuilder()
@@ -67,7 +67,7 @@ class DownloadFileGrpcService(
                     .setExtension(fileCollection.extension)
                     .setTotalSize(fileCollection.fileSize)
                     .setRoomKey(if (uploadChatRoomKey != null) uploadChatRoomKey.toHexString() else "")
-                    .setUserKey(fileCollection.uploadUserKey.toHexString()),
+                    .setUserKey(fileCollection.uploadUserId.toHexString()),
             ).build()
     }
 
