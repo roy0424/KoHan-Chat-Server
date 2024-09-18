@@ -6,6 +6,6 @@ spring:
 
 kohan:
   file:
-    savePath: D:/home/kohan/tmp
+    savePath: /home/kohan/tmp
     profileExtensions: jpg
     maxUploadFileSize: 2147483648
