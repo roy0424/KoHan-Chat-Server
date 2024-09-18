@@ -27,7 +27,7 @@ class AppConfig {
             serverBuilder.serviceUnder("/docs", DocService())
             serverBuilder.decorator(LoggingService.newDecorator())
             serverBuilder.accessLogWriter(AccessLogWriter.combined(), false)
-            serverBuilder.requestTimeout(Duration.ZERO)
-            serverBuilder.maxRequestLength(Long.MAX_VALUE)
+            serverBuilder.requestTimeout(Duration.ofHours(1))
+            serverBuilder.maxRequestLength(10L * 1024L * 1024L * 1024L * Long.SIZE_BYTES)// 10GB
         }
 }
