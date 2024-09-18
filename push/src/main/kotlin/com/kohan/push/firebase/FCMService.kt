@@ -3,9 +3,9 @@ package com.kohan.push.firebase
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.auth.oauth2.GoogleCredentials
 import com.kohan.push.dto.FCMMessage
-import com.kohan.push.dto.FCMMessageInfo
 import com.kohan.push.dto.Message
 import com.kohan.push.dto.Notification
+import com.kohan.push.vo.SendNotification
 import com.linecorp.armeria.client.WebClient
 import com.linecorp.armeria.common.HttpData
 import com.linecorp.armeria.common.HttpHeaderNames
@@ -25,7 +25,7 @@ class FCMService(
     private val firebaseConfigPath: String,
     private val objectMapper: ObjectMapper,
 ) {
-    fun sendNotification(fcmMessageInfo: FCMMessageInfo) {
+    fun sendNotification(fcmMessageInfo: SendNotification) {
         val fcmMessage =
             makeFCMMessage(fcmMessageInfo)
         val webClient = WebClient.builder(apiUrl).build()
@@ -47,7 +47,7 @@ class FCMService(
             }
     }
 
-    private fun makeFCMMessage(fcmMessageInfo: FCMMessageInfo): String {
+    private fun makeFCMMessage(fcmMessageInfo: SendNotification): String {
         val fcmMessage =
             FCMMessage(
                 validateOnly = false,

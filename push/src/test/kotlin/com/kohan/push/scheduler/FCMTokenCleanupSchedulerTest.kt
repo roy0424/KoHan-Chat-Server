@@ -20,63 +20,63 @@ import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDateTime
 
 @AutoConfigureDataMongo
-@SpringBootTest(properties = ["de.flapdoodle.mongodb.embedded.version=5.0.5"])
+@SpringBootTest
 @EnableAutoConfiguration
 @DirtiesContext
-class FCMTokenCleanupSchedulerTest(
+class FCMTokenCleanupSchedulerTest
     @Autowired
-    private val fcmTokenCleanupScheduler: FCMTokenCleanupScheduler,
-    @Autowired
-    private val fcmTokenRepository: FCMTokenRepository,
-) {
-    @MockBean
-    private lateinit var firebaseConfig: FirebaseConfig
+    constructor(
+        private val fcmTokenCleanupScheduler: FCMTokenCleanupScheduler,
+        private val fcmTokenRepository: FCMTokenRepository,
+    ) {
+        @MockBean
+        private lateinit var firebaseConfig: FirebaseConfig
 
-    @MockBean
-    private lateinit var fcmService: FCMService
+        @MockBean
+        private lateinit var fcmService: FCMService
 
-    val objectId = ObjectId()
+        val objectId = ObjectId()
 
-    @BeforeEach
-    fun setUp() {
-        fcmTokenRepository.save(
-            FCMTokenCollection(
-                userId = objectId,
-                tokens =
-                    mutableListOf(
-                        FCMTokenInfo(
-                            token = "token1",
-                            accessedAt = LocalDateTime.now().minusDays(60),
+        @BeforeEach
+        fun setUp() {
+            fcmTokenRepository.save(
+                FCMTokenCollection(
+                    userId = objectId,
+                    tokens =
+                        mutableListOf(
+                            FCMTokenInfo(
+                                token = "token1",
+                                accessedAt = LocalDateTime.now().minusDays(60),
+                            ),
+                            FCMTokenInfo(
+                                token = "token2",
+                                accessedAt = LocalDateTime.now().minusDays(30),
+                            ),
+                            FCMTokenInfo(
+                                token = "token3",
+                                accessedAt = LocalDateTime.now().minusDays(15),
+                            ),
+                            FCMTokenInfo(
+                                token = "token4",
+                                accessedAt = LocalDateTime.now(),
+                            ),
                         ),
-                        FCMTokenInfo(
-                            token = "token2",
-                            accessedAt = LocalDateTime.now().minusDays(30),
-                        ),
-                        FCMTokenInfo(
-                            token = "token3",
-                            accessedAt = LocalDateTime.now().minusDays(15),
-                        ),
-                        FCMTokenInfo(
-                            token = "token4",
-                            accessedAt = LocalDateTime.now(),
-                        ),
-                    ),
-            ),
-        )
+                ),
+            )
+        }
+
+        @Test
+        fun deleteExpiredTokens() {
+            fcmTokenCleanupScheduler.deleteExpiredTokens()
+
+            val collection =
+                fcmTokenRepository.findByUserId(objectId)
+                    ?: fail("FCM token collection not found")
+            assertEquals(2, collection.tokens.size)
+        }
+
+        @AfterEach
+        fun tearDown() {
+            fcmTokenRepository.deleteAll()
+        }
     }
-
-    @Test
-    fun deleteExpiredTokens() {
-        fcmTokenCleanupScheduler.deleteExpiredTokens()
-
-        val collection =
-            fcmTokenRepository.findByUserId(objectId)
-                ?: fail("FCM token collection not found")
-        assertEquals(2, collection.tokens.size)
-    }
-
-    @AfterEach
-    fun tearDown() {
-        fcmTokenRepository.deleteAll()
-    }
-}

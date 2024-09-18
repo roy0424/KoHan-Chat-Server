@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: test
+    include:
+      - test-mongo
 
 kohan:
   push:
