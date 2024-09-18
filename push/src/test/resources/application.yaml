@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    active: test
+    include:
+      - test-mongo
+
+kohan:
+  push:
+    firebase:
+      registration:
+        token:
+          expiration:
+            day: 30

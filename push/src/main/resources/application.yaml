@@ -1,0 +1,28 @@
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+  profiles:
+    include:
+      - mongo
+    active: prod
+
+armeria:
+  ports:
+    - port: ${PUSH_PORT}
+      protocols:
+        - HTTP
+
+kohan:
+  push:
+    firebase:
+      secret:
+        key:
+          path: ${FIREBASE_SECRET_KEY_PATH}
+      messages:
+        send:
+          url: ${FIREBASE_MESSAGES_SEND_URL}
+      registration:
+        token:
+          expiration:
+            day: ${FIREBASE_REGISTRATION_TOKEN_EXPIRATION_DAY}

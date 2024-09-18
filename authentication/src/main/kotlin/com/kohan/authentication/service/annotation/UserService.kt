@@ -1,17 +1,21 @@
 package com.kohan.authentication.service.annotation
 
-import com.kohan.authentication.collection.UserCollection
-import com.kohan.authentication.collection.item.TokenInfo
 import com.kohan.authentication.dto.TokenDto
 import com.kohan.authentication.exception.code.UserErrorCode
 import com.kohan.authentication.repository.UserRepository
 import com.kohan.authentication.util.TokenGenerator
 import com.kohan.authentication.util.UserUtil
+import com.kohan.authentication.vo.RegistrationToken
 import com.kohan.authentication.vo.SignIn
 import com.kohan.authentication.vo.SignUp
-import com.kohan.shared.armeria.converter.request.AccessDeviceRequestConverter
-import com.kohan.shared.armeria.converter.request.result.AccessDeviceInfo
+import com.kohan.proto.push.v1.FCMTokenServiceGrpc.FCMTokenServiceBlockingStub
+import com.kohan.proto.push.v1.FcmToken.FCMTokenInfo
+import com.kohan.proto.push.v1.FcmToken.RegisterFCMToken
 import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
+import com.kohan.shared.collection.user.UserCollection
+import com.kohan.shared.collection.user.item.AccessDeviceInfo
+import com.kohan.shared.collection.user.item.TokenInfo
+import com.kohan.shared.spring.converter.request.AccessDeviceRequestConverter
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler
 import com.kohan.shared.spring.exception.handler.MismatchedInputExceptionHandler
 import com.linecorp.armeria.server.annotation.ExceptionHandler
@@ -24,6 +28,7 @@ import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
+import java.time.LocalDateTime
 
 @Service
 @Validated
@@ -34,6 +39,7 @@ class UserService(
     private val userRepository: UserRepository,
     private val userUtil: UserUtil,
     private val tokenGenerator: TokenGenerator,
+    private val pushGrpcClient: FCMTokenServiceBlockingStub,
 ) {
     @Post("/sign-up")
     @ProducesJson
@@ -49,7 +55,7 @@ class UserService(
         val newUser = userUtil.toUserCollection(signUp)
         val (_, newToken) = saveUserWithNewToken(newUser, accessDeviceInfo)
 
-        return newToken.toDto()
+        return TokenDto.from(newToken)
     }
 
     @Post("/sign-in")
@@ -68,7 +74,61 @@ class UserService(
         removeOldToken(user, accessDeviceInfo)
         val (_, newToken) = saveUserWithNewToken(user, accessDeviceInfo)
 
-        return newToken.toDto()
+        return TokenDto.from(newToken)
+    }
+
+    @Post("/register-device")
+    @ProducesJson
+    fun registerDevice(
+        @Valid
+        @RequestObject
+        registrationToken: RegistrationToken,
+    ) {
+        val user =
+            userRepository.findByTokenInfosToken(registrationToken.token)
+                ?: throw UserErrorCode.NOT_FOUND_USER.businessException
+        user.tokenInfos.firstOrNull { it.token == registrationToken.token }?.let { tokenInfo ->
+            tokenInfo.expirationDate.isBefore(LocalDateTime.now()).takeIf { it }?.let {
+                throw UserErrorCode.EXPIRED_TOKEN.businessException
+            }
+        }
+        val registerFCMToken =
+            RegisterFCMToken
+                .newBuilder()
+                .setFcmTokenInfo(
+                    FCMTokenInfo
+                        .newBuilder()
+                        .setUserId(user.id.toString())
+                        .setToken(registrationToken.registrationToken)
+                        .build(),
+                ).setAccessedAt(LocalDateTime.now().toString())
+                .build()
+        pushGrpcClient.registerFCMToken(registerFCMToken)
+    }
+
+    @Post("/sign-out")
+    @ProducesJson
+    @Transactional
+    fun signOut(
+        @Valid
+        @RequestObject
+        registrationToken: RegistrationToken,
+    ) {
+        val user =
+            userRepository.findByTokenInfosToken(registrationToken.token)
+                ?: throw UserErrorCode.NOT_FOUND_USER.businessException
+
+        user.removeToken(registrationToken.token)
+        userRepository.save(user)
+
+        val unRegisterFCMToken =
+            FCMTokenInfo
+                .newBuilder()
+                .setToken(registrationToken.registrationToken)
+                .setUserId(user.id.toString())
+                .build()
+
+        pushGrpcClient.unregisterFCMToken(unRegisterFCMToken)
     }
 
     protected fun saveUserWithNewToken(

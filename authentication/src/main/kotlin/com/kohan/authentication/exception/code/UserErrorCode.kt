@@ -24,4 +24,10 @@ enum class UserErrorCode(
             mapOf("code" to "USER_003", "message" to "Invalid token"),
         ),
     ),
+    EXPIRED_TOKEN(
+        BusinessException(
+            HttpStatus.BAD_REQUEST,
+            mapOf("code" to "USER_004", "message" to "Expired token"),
+        ),
+    ),
 }

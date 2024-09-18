@@ -11,14 +11,29 @@ configurations {
 }
 
 dependencies {
-    api(project(":shared-armeria"))
+    api(project(":shared-armeria")) {
+        exclude(
+            group =
+                libs.slf4j.simple
+                    .get()
+                    .group,
+            module =
+                libs.slf4j.simple
+                    .get()
+                    .name,
+        )
+    }
+    api(project(":shared-collection"))
     api(libs.kotlin.allopen)
     api(libs.armeria.spring.boot3.starter)
     api(libs.spring.boot.starter.security)
     api(libs.spring.boot.starter.validation)
     api(libs.spring.boot.starter.data.mongodb)
+    api(libs.spring.kafka)
     api(libs.bcprov.jdk18on)
     api(libs.spring.embed.mongo)
+
+    implementation(libs.uap.java)
 
     testApi(libs.embed.mongo)
     annotationProcessor(libs.spring.boot.configuration.processor)

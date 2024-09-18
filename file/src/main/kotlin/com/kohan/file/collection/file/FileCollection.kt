@@ -1,6 +1,6 @@
 package com.kohan.file.collection.file
 
-import com.kohan.shared.spring.mongo.collection.base.BaseCollection
+import com.kohan.shared.collection.base.BaseCollection
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
