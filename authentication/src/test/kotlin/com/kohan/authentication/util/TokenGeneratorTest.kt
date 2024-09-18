@@ -1,6 +1,6 @@
 package com.kohan.authentication.util
 
-import com.kohan.shared.armeria.converter.request.result.AccessDeviceInfo
+import com.kohan.shared.collection.user.item.AccessDeviceInfo
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import kotlin.test.assertEquals

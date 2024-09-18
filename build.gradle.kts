@@ -44,6 +44,7 @@ subprojects {
         implementation(rootProject.libs.kotlin.coroutines.core)
         implementation(rootProject.libs.kotlin.coroutines.debug)
         implementation(rootProject.libs.jackson.module.kotlin)
+        implementation(rootProject.libs.dotenv)
 
         testImplementation(rootProject.libs.kotlin.test)
         testImplementation(rootProject.libs.kotlin.coroutines.test)

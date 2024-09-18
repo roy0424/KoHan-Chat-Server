@@ -2,8 +2,8 @@ package com.kohan.authentication.service.grpc
 
 import com.kohan.authentication.exception.code.UserErrorCode
 import com.kohan.authentication.repository.UserRepository
-import com.kohan.shared.armeria.authentication.v1.Authentication
-import com.kohan.shared.armeria.authentication.v1.AuthenticationServiceGrpcKt.AuthenticationServiceCoroutineImplBase
+import com.kohan.proto.authentication.v1.Authentication
+import com.kohan.proto.authentication.v1.AuthenticationServiceGrpcKt.AuthenticationServiceCoroutineImplBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service

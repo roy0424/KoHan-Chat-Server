@@ -1,0 +1,10 @@
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+  profiles:
+    active: prod
+---
+spring:
+  profiles: test
+  de.flapdoodle.mongodb.embedded.version: 5.0.6

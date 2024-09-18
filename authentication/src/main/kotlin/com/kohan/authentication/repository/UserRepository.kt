@@ -1,6 +1,6 @@
 package com.kohan.authentication.repository
 
-import com.kohan.authentication.collection.UserCollection
+import com.kohan.shared.collection.user.UserCollection
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Query
