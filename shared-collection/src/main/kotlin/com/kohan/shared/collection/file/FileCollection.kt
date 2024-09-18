@@ -40,7 +40,7 @@ class FileCollection(
             )
 
         fun to(
-            uploadProfileVO: UploadFile.UploadProfileVO,
+            uploadProfileVO: UploadFile.UploadProfile,
             fileExtension: String,
         ): FileCollection =
             FileCollection(

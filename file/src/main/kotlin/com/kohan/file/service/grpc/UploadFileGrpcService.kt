@@ -31,32 +31,7 @@ class UploadFileGrpcService(
     private val fileUtil: FileUtil,
     private val fileRepository: FileRepository,
 ) : FileUploadServiceGrpcKt.FileUploadServiceCoroutineImplBase() {
-    override suspend fun upload(request: UploadFile.UploadFileVO): UploadFile.UploadFileDTO {
-        val fileCollection = FileCollection.to(request.info)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val newFile = fileUtil.newFile(fileCollection.fileName)
-
-            newFile.outputStream().buffered().use { stream ->
-                fileUtil.writeToFile(
-                    request.fileContent.toByteArray(),
-                    stream,
-                )
-            }
-        }
-
-        val saved =
-            withContext(Dispatchers.IO) {
-                fileRepository.save(fileCollection)
-            }
-
-        return UploadFile.UploadFileDTO
-            .newBuilder()
-            .setFileKey(saved._id.toHexString())
-            .build()
-    }
-
-    override suspend fun uploadProfile(request: UploadFile.UploadProfileVO): UploadFile.UploadFileDTO {
+    override suspend fun uploadProfile(request: UploadFile.UploadProfile): UploadFile.UploadFileDTO {
         val fileCollection = FileCollection.to(request, profileExtension)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -141,7 +116,7 @@ class UploadFileGrpcService(
         }
     }
 
-    override fun uploadLageFile(requests: Flow<UploadFile.UploadLageFileVO>): Flow<UploadFile.UploadFileDTO> =
+    override fun uploadLageFile(requests: Flow<UploadFile.UploadLageFile>): Flow<UploadFile.UploadFileDTO> =
         flow {
             val uploadingFile = UploadingFile()
 
@@ -152,7 +127,7 @@ class UploadFileGrpcService(
             }
         }
 
-    override fun uploadLageImage(requests: Flow<UploadFile.UploadLageFileVO>): Flow<UploadFile.UploadFileDTO> =
+    override fun uploadLageImage(requests: Flow<UploadFile.UploadLageFile>): Flow<UploadFile.UploadFileDTO> =
         flow {
             val uploadingFile = UploadingFile(".tmp")
 
@@ -170,7 +145,7 @@ class UploadFileGrpcService(
         }
 
     private suspend fun FlowCollector<UploadFile.UploadFileDTO>.saveFileFromStreamFlow(
-        requests: Flow<UploadFile.UploadLageFileVO>,
+        requests: Flow<UploadFile.UploadLageFile>,
         uploadingFile: UploadingFile,
     ) {
         requests.cancellable().collect { request ->

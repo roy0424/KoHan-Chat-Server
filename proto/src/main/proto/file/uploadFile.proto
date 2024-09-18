@@ -10,19 +10,14 @@ message UploadFileInfo{
   int64 totalSize = 6;
 }
 
-message UploadFileVO {
-  bytes fileContent = 1;
-  UploadFileInfo info = 2;
-}
-
-message UploadLageFileVO{
+message UploadLageFile{
   oneof data{
     bytes chunk = 1;
     UploadFileInfo info = 2;
   }
 }
 
-message UploadProfileVO{
+message UploadProfile{
   bytes fileContent = 1;
   string userKey = 2;
   optional int32 totalSize = 3;
@@ -36,8 +31,7 @@ message UploadFileDTO {
 }
 
 service FileUploadService {
-  rpc upload(UploadFileVO) returns (UploadFileDTO) {}
-  rpc uploadProfile(UploadProfileVO) returns (UploadFileDTO) {}
-  rpc uploadLageFile(stream UploadLageFileVO) returns (stream UploadFileDTO) {}
-  rpc uploadLageImage(stream UploadLageFileVO) returns (stream UploadFileDTO) {}
+  rpc uploadProfile(UploadProfile) returns (UploadFileDTO) {}
+  rpc uploadLageFile(stream UploadLageFile) returns (stream UploadFileDTO) {}
+  rpc uploadLageImage(stream UploadLageFile) returns (stream UploadFileDTO) {}
 }

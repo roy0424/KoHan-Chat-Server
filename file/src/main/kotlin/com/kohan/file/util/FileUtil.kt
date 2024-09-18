@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.OutputStream
 
 @Component
 class FileUtil(
@@ -16,15 +15,6 @@ class FileUtil(
     @Value("\${kohan.file.profileExtensions}")
     private val profileExtension: String,
 ) {
-    suspend fun writeToFile(
-        byteArray: ByteArray,
-        outputStream: OutputStream,
-    ) {
-        withContext(Dispatchers.IO) {
-            outputStream.write(byteArray)
-        }
-    }
-
     suspend fun saveCompressedImage(
         fileName: String,
         image: BufferedImage,

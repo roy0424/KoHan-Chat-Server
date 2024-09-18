@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import org.bson.types.ObjectId
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -42,23 +41,6 @@ class FileUtilTest
         private val fileUtil: FileUtil,
         private val fileRepository: FileRepository,
     ) {
-        @Test
-        fun uploadFileTest() =
-            runTest {
-                val testFile = ClassPathResource("DummyFiles/test.txt").file
-                val testFileStream = testFile.inputStream()
-                val newFile = fileUtil.newFile(UUID.randomUUID().toString())
-
-                newFile.outputStream().buffered().use { stream ->
-                    fileUtil.writeToFile(testFileStream.readBytes(), stream)
-                }
-
-                assertEquals(
-                    testFile.readBytes().toString(Charsets.UTF_8),
-                    newFile.readBytes().toString(Charsets.UTF_8),
-                )
-            }
-
         @Test
         fun saveCompressedImage() =
             runTest {
@@ -114,7 +96,7 @@ class FileUtilTest
             runTest {
                 val testFile = ClassPathResource("DummyFiles/22mb.jpg").file
                 val initialUploadVO =
-                    UploadFile.UploadLageFileVO
+                    UploadFile.UploadLageFile
                         .newBuilder()
                         .setInfo(
                             UploadFile.UploadFileInfo
@@ -147,7 +129,7 @@ class FileUtilTest
         private suspend fun uploadFile(
             file: File,
             imageCompressing: Boolean,
-            initialUploadVO: UploadFile.UploadLageFileVO,
+            initialUploadVO: UploadFile.UploadLageFile,
         ): String {
             val client = createGrpcClient()
             val request = createFileUploadFlow(file, initialUploadVO)
@@ -162,8 +144,8 @@ class FileUtilTest
 
         private fun createFileUploadFlow(
             file: File,
-            initialUploadVO: UploadFile.UploadLageFileVO?,
-        ): Flow<UploadFile.UploadLageFileVO> =
+            initialUploadVO: UploadFile.UploadLageFile?,
+        ): Flow<UploadFile.UploadLageFile> =
             flow {
                 val chunkSize: Int = 1024 * 1024 * 16
 
@@ -214,8 +196,8 @@ class FileUtilTest
                 .maxResponseMessageLength(-1)
                 .build(FileUploadServiceGrpcKt.FileUploadServiceCoroutineStub::class.java)
 
-        private fun createInitialUploadVO(file: File): UploadFile.UploadLageFileVO =
-            UploadFile.UploadLageFileVO
+        private fun createInitialUploadVO(file: File): UploadFile.UploadLageFile =
+            UploadFile.UploadLageFile
                 .newBuilder()
                 .setInfo(
                     UploadFile.UploadFileInfo
@@ -227,8 +209,8 @@ class FileUtilTest
                         .setUserKey(ObjectId.get().toHexString()),
                 ).build()
 
-        private fun createChunkUploadVO(chunk: ByteArray): UploadFile.UploadLageFileVO =
-            UploadFile.UploadLageFileVO
+        private fun createChunkUploadVO(chunk: ByteArray): UploadFile.UploadLageFile =
+            UploadFile.UploadLageFile
                 .newBuilder()
                 .setChunk(ByteString.copyFrom(chunk))
                 .build()
