@@ -1,21 +1,54 @@
 package com.kohan.shared.collection.file
 
+import com.kohan.proto.file.v1.UploadFile
+import com.kohan.proto.file.v1.UploadFile.UploadFileInfo
 import com.kohan.shared.collection.base.BaseCollection
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
+import java.time.LocalDateTime
+import java.util.UUID
 
-@Document(collation = "file")
+@Document(collection = "file")
 class FileCollection(
-    /** 업로드 한 파일 이름 */
+    /** Original file name */
     var originalFileName: String,
-    /** 서버 파일 시스템에 저장된 파일 이름 */
+    /** The name of the file stored on the server file system */
     var fileName: String,
-    /** 업로드한 파일의 확장자 */
+    /** Original file extension */
     var extension: String,
-    /** 파일 사이즈 */
-    var fileSize: Int,
-    /** 업로드한 사람 */
+    /** File size Bytes */
+    var fileSize: Long,
+    /** Upload chat room
+     *
+     * If null, it's visible to everyone */
+    @Indexed
+    var uploadChatRoomKey: ObjectId? = null,
+    /** upload user */
     @Indexed
     var uploadUserKey: ObjectId,
-) : BaseCollection()
+) : BaseCollection() {
+    companion object {
+        fun to(uploadFileInfo: UploadFileInfo): FileCollection =
+            FileCollection(
+                fileName = UUID.randomUUID().toString(),
+                originalFileName = uploadFileInfo.fileName,
+                extension = uploadFileInfo.extension,
+                fileSize = uploadFileInfo.totalSize,
+                uploadChatRoomKey = ObjectId(uploadFileInfo.roomKey),
+                uploadUserKey = ObjectId(uploadFileInfo.userKey),
+            )
+
+        fun to(
+            uploadProfileVO: UploadFile.UploadProfile,
+            fileExtension: String,
+        ): FileCollection =
+            FileCollection(
+                fileName = UUID.randomUUID().toString(),
+                originalFileName = uploadProfileVO.userKey + LocalDateTime.now(),
+                extension = fileExtension,
+                fileSize = uploadProfileVO.fileContent.size().toLong(),
+                uploadUserKey = ObjectId(uploadProfileVO.userKey),
+            )
+    }
+}
