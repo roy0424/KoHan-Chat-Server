@@ -1,6 +1,5 @@
 package com.kohan.shared.collection.user.item
 
-import com.kohan.shared.armeria.converter.request.result.AccessDeviceInfo
 import org.springframework.data.mongodb.core.index.Indexed
 import java.time.LocalDateTime
 

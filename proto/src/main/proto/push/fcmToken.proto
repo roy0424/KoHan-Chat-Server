@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.kohan.shared.armeria.push.v1;
+package com.kohan.proto.push.v1;
 
 import "google/protobuf/empty.proto";
 

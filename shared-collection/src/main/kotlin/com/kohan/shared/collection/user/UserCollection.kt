@@ -23,7 +23,6 @@ data class UserCollection(
      *  A single user can use multiple devices with the same account */
     var tokenInfos: MutableList<TokenInfo>,
 ) : BaseCollection() {
-
     fun removeToken(token: String) {
         tokenInfos.removeIf { it.token == token }
     }

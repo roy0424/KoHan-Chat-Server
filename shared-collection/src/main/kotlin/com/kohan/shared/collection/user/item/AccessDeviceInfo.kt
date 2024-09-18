@@ -1,4 +1,4 @@
-package com.kohan.shared.armeria.converter.request.result
+package com.kohan.shared.collection.user.item
 
 data class AccessDeviceInfo(
     val ip: String,

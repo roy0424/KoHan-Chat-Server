@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.kohan.shared.armeria.authentication.v1;
+package com.kohan.proto.authentication.v1;
 
 message UserToken {
   string token = 1;

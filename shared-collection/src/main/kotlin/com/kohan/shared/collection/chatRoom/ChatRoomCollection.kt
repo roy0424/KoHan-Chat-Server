@@ -1,7 +1,7 @@
 package com.kohan.shared.collection.chatRoom
 
-import com.kohan.shared.enum.chatRoom.ChatRoomType
 import com.kohan.shared.collection.base.BaseCollection
+import com.kohan.shared.enum.chatRoom.ChatRoomType
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.mapping.Document
 

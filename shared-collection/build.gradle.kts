@@ -1,4 +1,4 @@
 dependencies {
-    implementation(project(":shared-armeria"))
+    api(project(":proto"))
     implementation(libs.spring.boot.starter.data.mongodb)
 }

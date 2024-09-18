@@ -1,6 +1,6 @@
 package com.kohan.shared.collection.fcm.item
 
-import com.kohan.shared.armeria.push.v1.FcmToken
+import com.kohan.proto.push.v1.FcmToken
 import org.springframework.data.mongodb.core.index.Indexed
 import java.time.LocalDateTime
 

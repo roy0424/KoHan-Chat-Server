@@ -2,8 +2,8 @@ package com.kohan.authentication.util
 
 import com.kohan.authentication.client.grpc.FileClient
 import com.kohan.authentication.vo.SignUp
-import org.springframework.stereotype.Component
 import com.kohan.shared.collection.user.UserCollection
+import org.springframework.stereotype.Component
 
 @Component
 class UserUtil(

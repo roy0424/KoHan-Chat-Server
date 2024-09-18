@@ -1,6 +1,6 @@
 package com.kohan.shared.collection.fcm
 
-import com.kohan.shared.armeria.push.v1.FcmToken
+import com.kohan.proto.push.v1.FcmToken
 import com.kohan.shared.collection.base.BaseCollection
 import com.kohan.shared.collection.fcm.item.FCMTokenInfo
 import org.bson.types.ObjectId

@@ -1,7 +1,5 @@
 package com.kohan.authentication.service.annotation
 
-import com.kohan.shared.collection.user.UserCollection
-import com.kohan.shared.collection.user.item.TokenInfo
 import com.kohan.authentication.dto.TokenDto
 import com.kohan.authentication.exception.code.UserErrorCode
 import com.kohan.authentication.repository.UserRepository
@@ -10,12 +8,14 @@ import com.kohan.authentication.util.UserUtil
 import com.kohan.authentication.vo.RegistrationToken
 import com.kohan.authentication.vo.SignIn
 import com.kohan.authentication.vo.SignUp
-import com.kohan.shared.armeria.converter.request.AccessDeviceRequestConverter
-import com.kohan.shared.armeria.converter.request.result.AccessDeviceInfo
+import com.kohan.proto.push.v1.FCMTokenServiceGrpc.FCMTokenServiceBlockingStub
+import com.kohan.proto.push.v1.FcmToken.RegisterFCMToken
+import com.kohan.proto.push.v1.FcmToken.UnRegisterFCMToken
 import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
-import com.kohan.shared.armeria.push.v1.FCMTokenServiceGrpc.FCMTokenServiceBlockingStub
-import com.kohan.shared.armeria.push.v1.FcmToken.RegisterFCMToken
-import com.kohan.shared.armeria.push.v1.FcmToken.UnRegisterFCMToken
+import com.kohan.shared.collection.user.UserCollection
+import com.kohan.shared.collection.user.item.AccessDeviceInfo
+import com.kohan.shared.collection.user.item.TokenInfo
+import com.kohan.shared.spring.converter.request.AccessDeviceRequestConverter
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler
 import com.kohan.shared.spring.exception.handler.MismatchedInputExceptionHandler
 import com.linecorp.armeria.server.annotation.ExceptionHandler

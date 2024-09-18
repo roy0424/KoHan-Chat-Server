@@ -33,6 +33,8 @@ dependencies {
     api(libs.bcprov.jdk18on)
     api(libs.spring.embed.mongo)
 
+    implementation(libs.uap.java)
+
     testApi(libs.embed.mongo)
     annotationProcessor(libs.spring.boot.configuration.processor)
 

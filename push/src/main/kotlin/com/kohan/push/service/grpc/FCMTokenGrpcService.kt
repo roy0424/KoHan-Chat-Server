@@ -1,9 +1,9 @@
 package com.kohan.push.service.grpc
 
 import com.google.protobuf.Empty
+import com.kohan.proto.push.v1.FCMTokenServiceGrpcKt
+import com.kohan.proto.push.v1.FcmToken
 import com.kohan.push.repository.FCMTokenRepository
-import com.kohan.shared.armeria.push.v1.FCMTokenServiceGrpcKt
-import com.kohan.shared.armeria.push.v1.FcmToken
 import com.kohan.shared.collection.fcm.FCMTokenCollection
 import com.kohan.shared.collection.fcm.item.FCMTokenInfo
 import kotlinx.coroutines.Dispatchers

@@ -1,6 +1,6 @@
-package com.kohan.shared.armeria.converter.request
+package com.kohan.shared.spring.converter.request
 
-import com.kohan.shared.armeria.converter.request.parser.AccessInfoParser
+import com.kohan.shared.spring.converter.request.parser.AccessInfoParser
 import com.linecorp.armeria.common.AggregatedHttpRequest
 import com.linecorp.armeria.server.ServiceRequestContext
 import com.linecorp.armeria.server.annotation.RequestConverterFunction

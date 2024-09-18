@@ -9,12 +9,11 @@ class TokenDto(
     var issuanceDate: LocalDateTime,
 ) {
     companion object {
-        fun from(tokenInfo: TokenInfo): TokenDto {
-            return TokenDto(
+        fun from(tokenInfo: TokenInfo): TokenDto =
+            TokenDto(
                 token = tokenInfo.token,
                 expiresAt = tokenInfo.expirationDate,
                 issuanceDate = tokenInfo.issuanceDate,
             )
-        }
     }
 }
