@@ -1,6 +1,6 @@
 package com.kohan.push.repository
 
-import com.kohan.push.collection.FCMTokenCollection
+import com.kohan.shared.collection.fcm.FCMTokenCollection
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 import java.time.LocalDateTime

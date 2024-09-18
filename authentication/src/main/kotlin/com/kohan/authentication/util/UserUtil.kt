@@ -1,9 +1,9 @@
 package com.kohan.authentication.util
 
 import com.kohan.authentication.client.grpc.FileClient
-import com.kohan.authentication.collection.UserCollection
 import com.kohan.authentication.vo.SignUp
 import org.springframework.stereotype.Component
+import com.kohan.shared.collection.user.UserCollection
 
 @Component
 class UserUtil(
@@ -16,6 +16,7 @@ class UserUtil(
             password = passwordUtil.hash(signUp.password),
             nickname = signUp.nickname,
             profileImageUrl = fileClient.upload(),
+            statusMessage = null,
             tokenInfos = mutableListOf(),
         )
 

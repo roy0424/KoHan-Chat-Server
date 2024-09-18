@@ -1,10 +1,10 @@
 package com.kohan.push.scheduler
 
-import com.kohan.push.collection.FCMTokenCollection
-import com.kohan.push.collection.item.FCMTokenInfo
 import com.kohan.push.firebase.FCMService
 import com.kohan.push.firebase.FirebaseConfig
 import com.kohan.push.repository.FCMTokenRepository
+import com.kohan.shared.collection.fcm.FCMTokenCollection
+import com.kohan.shared.collection.fcm.item.FCMTokenInfo
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals

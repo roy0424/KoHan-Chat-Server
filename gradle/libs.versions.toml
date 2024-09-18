@@ -3,6 +3,7 @@ armeria = "1.29.4"
 spring-boot = "3.3.2"
 spring-dependency-management = "1.1.6"
 kafka = "3.7.0"
+spring-kafka = "3.2.3"
 kotlin = "1.9.23"
 kotlin-coroutine = "1.8.1"
 bouncycastle = "1.78.1"
@@ -45,6 +46,10 @@ version.ref = "armeria"
 module = "com.linecorp.armeria:armeria-grpc"
 version.ref = "armeria"
 
+[libraries.armeria-kafka]
+module = "com.linecorp.armeria:armeria-kafka"
+version.ref = "armeria"
+
 [libraries.armeria-spring-boot3-starter]
 module = "com.linecorp.armeria:armeria-spring-boot3-starter"
 version.ref = "armeria"
@@ -72,6 +77,10 @@ version.ref = "spring-boot"
 [libraries.spring-boot-starter-data-mongodb]
 module = "org.springframework.boot:spring-boot-starter-data-mongodb"
 version.ref = "spring-boot"
+
+[libraries.spring-kafka]
+module = "org.springframework.kafka:spring-kafka"
+version.ref = "spring-kafka"
 
 [libraries.kafka]
 module = "org.apache.kafka:kafka-clients"

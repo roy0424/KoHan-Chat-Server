@@ -1,4 +1,4 @@
-package com.kohan.file.collection.file
+package com.kohan.shared.collection.file
 
 import com.kohan.shared.collection.base.BaseCollection
 import org.bson.types.ObjectId

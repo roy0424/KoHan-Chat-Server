@@ -1,7 +1,7 @@
 package com.kohan.authentication.service.annotation
 
-import com.kohan.authentication.collection.UserCollection
-import com.kohan.authentication.collection.item.TokenInfo
+import com.kohan.shared.collection.user.UserCollection
+import com.kohan.shared.collection.user.item.TokenInfo
 import com.kohan.authentication.dto.TokenDto
 import com.kohan.authentication.exception.code.UserErrorCode
 import com.kohan.authentication.repository.UserRepository
@@ -55,7 +55,7 @@ class UserService(
         val newUser = userUtil.toUserCollection(signUp)
         val (_, newToken) = saveUserWithNewToken(newUser, accessDeviceInfo)
 
-        return newToken.toDto()
+        return TokenDto.from(newToken)
     }
 
     @Post("/sign-in")
@@ -74,7 +74,7 @@ class UserService(
         removeOldToken(user, accessDeviceInfo)
         val (_, newToken) = saveUserWithNewToken(user, accessDeviceInfo)
 
-        return newToken.toDto()
+        return TokenDto.from(newToken)
     }
 
     @Post("/register-device")
