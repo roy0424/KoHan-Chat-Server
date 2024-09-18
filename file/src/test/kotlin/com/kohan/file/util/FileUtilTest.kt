@@ -2,10 +2,8 @@ package com.kohan.file.util
 
 import com.google.protobuf.ByteString
 import com.kohan.file.repository.FileRepository
-import com.kohan.shared.armeria.file.v1.FileUploadServiceGrpcKt
-import com.kohan.shared.armeria.file.v1.UploadFile.UploadFileDTO
-import com.kohan.shared.armeria.file.v1.UploadFile.UploadFileInfo
-import com.kohan.shared.armeria.file.v1.UploadFile.UploadLageFileVO
+import com.kohan.proto.file.v1.FileUploadServiceGrpcKt
+import com.kohan.proto.file.v1.UploadFile
 import com.linecorp.armeria.client.grpc.GrpcClients
 import com.linecorp.armeria.common.grpc.GrpcSerializationFormats
 import io.grpc.StatusException
@@ -116,10 +114,10 @@ class FileUtilTest
             runTest {
                 val testFile = ClassPathResource("DummyFiles/22mb.jpg").file
                 val initialUploadVO =
-                    UploadLageFileVO
+                    UploadFile.UploadLageFileVO
                         .newBuilder()
                         .setInfo(
-                            UploadFileInfo
+                            UploadFile.UploadFileInfo
                                 .newBuilder()
                                 .setFileName(testFile.name)
                                 .setExtension(testFile.extension)
@@ -149,7 +147,7 @@ class FileUtilTest
         private suspend fun uploadFile(
             file: File,
             imageCompressing: Boolean,
-            initialUploadVO: UploadLageFileVO,
+            initialUploadVO: UploadFile.UploadLageFileVO,
         ): String {
             val client = createGrpcClient()
             val request = createFileUploadFlow(file, initialUploadVO)
@@ -164,8 +162,8 @@ class FileUtilTest
 
         private fun createFileUploadFlow(
             file: File,
-            initialUploadVO: UploadLageFileVO?,
-        ): Flow<UploadLageFileVO> =
+            initialUploadVO: UploadFile.UploadLageFileVO?,
+        ): Flow<UploadFile.UploadLageFileVO> =
             flow {
                 val chunkSize: Int = 1024 * 1024 * 16
 
@@ -186,7 +184,7 @@ class FileUtilTest
                 }
             }
 
-        private suspend fun handleUploadResponses(responses: Flow<UploadFileDTO>): String {
+        private suspend fun handleUploadResponses(responses: Flow<UploadFile.UploadFileDTO>): String {
             var savedFileKey = ""
             responses.collect { response ->
                 when {
@@ -216,11 +214,11 @@ class FileUtilTest
                 .maxResponseMessageLength(-1)
                 .build(FileUploadServiceGrpcKt.FileUploadServiceCoroutineStub::class.java)
 
-        private fun createInitialUploadVO(file: File): UploadLageFileVO =
-            UploadLageFileVO
+        private fun createInitialUploadVO(file: File): UploadFile.UploadLageFileVO =
+            UploadFile.UploadLageFileVO
                 .newBuilder()
                 .setInfo(
-                    UploadFileInfo
+                    UploadFile.UploadFileInfo
                         .newBuilder()
                         .setFileName(file.name)
                         .setExtension(file.extension)
@@ -229,8 +227,8 @@ class FileUtilTest
                         .setUserKey(ObjectId.get().toHexString()),
                 ).build()
 
-        private fun createChunkUploadVO(chunk: ByteArray): UploadLageFileVO =
-            UploadLageFileVO
+        private fun createChunkUploadVO(chunk: ByteArray): UploadFile.UploadLageFileVO =
+            UploadFile.UploadLageFileVO
                 .newBuilder()
                 .setChunk(ByteString.copyFrom(chunk))
                 .build()

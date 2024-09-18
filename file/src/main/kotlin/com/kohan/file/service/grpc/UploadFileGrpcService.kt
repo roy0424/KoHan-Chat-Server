@@ -1,11 +1,11 @@
 package com.kohan.file.service.grpc
 
 import com.google.protobuf.ByteString
-import com.kohan.file.collection.file.FileCollection
 import com.kohan.file.repository.FileRepository
 import com.kohan.file.util.FileUtil
-import com.kohan.shared.armeria.file.v1.FileUploadServiceGrpcKt
-import com.kohan.shared.armeria.file.v1.UploadFile
+import com.kohan.proto.file.v1.FileUploadServiceGrpcKt
+import com.kohan.proto.file.v1.UploadFile
+import com.kohan.shared.collection.file.FileCollection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
