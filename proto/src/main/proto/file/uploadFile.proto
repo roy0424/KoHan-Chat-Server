@@ -5,8 +5,8 @@ package com.kohan.proto.file.v1;
 message UploadFileInfo{
   string fileName = 1;
   string extension = 2;
-  string roomKey = 3;
-  string userKey = 4;
+  string roomId = 3;
+  string userId = 4;
   int64 totalSize = 5;
 }
 
@@ -19,12 +19,12 @@ message UploadLargeFile{
 
 message UploadProfile{
   bytes fileContent = 1;
-  string userKey = 2;
+  string userId = 2;
   optional int32 totalSize = 3;
 }
 
 message UploadFileDTO {
-  optional string fileKey = 1;
+  optional string fileId = 1;
   optional string message = 2;
   optional int64 received = 3;
   optional int64 total = 4;

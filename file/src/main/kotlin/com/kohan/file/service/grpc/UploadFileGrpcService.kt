@@ -32,7 +32,7 @@ class UploadFileGrpcService(
     private val fileRepository: FileRepository,
 ) : FileUploadServiceGrpcKt.FileUploadServiceCoroutineImplBase() {
     override suspend fun uploadProfile(request: UploadFile.UploadProfile): UploadFile.UploadFileDTO {
-        val fileCollection = FileCollection.of(request, profileExtension)
+        val fileCollection = FileCollection.from(request, profileExtension)
 
         CoroutineScope(Dispatchers.IO).launch {
             val image = request.fileContent.newInput().use(ImageIO::read)
@@ -46,7 +46,7 @@ class UploadFileGrpcService(
 
         return UploadFile.UploadFileDTO
             .newBuilder()
-            .setFileKey(saved._id.toHexString())
+            .setFileId(saved._id.toHexString())
             .build()
     }
 
@@ -100,7 +100,7 @@ class UploadFileGrpcService(
             close()
             return UploadFile.UploadFileDTO
                 .newBuilder()
-                .setFileKey(saveCollection()._id.toHexString())
+                .setFileId(saveCollection()._id.toHexString())
                 .build()
         }
 
@@ -153,7 +153,7 @@ class UploadFileGrpcService(
                 when {
                     request.hasInfo() -> {
                         checkUploadInfo(request.info)
-                        uploadingFile.init(FileCollection.of(request.info))
+                        uploadingFile.init(FileCollection.from(request.info))
                     }
 
                     request.hasChunk() && uploadingFile.isInit() -> {

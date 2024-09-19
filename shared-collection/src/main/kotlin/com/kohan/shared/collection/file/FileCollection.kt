@@ -29,26 +29,26 @@ class FileCollection(
     var uploadUserId: ObjectId,
 ) : BaseCollection() {
     companion object {
-        fun of(uploadFileInfo: UploadFileInfo): FileCollection =
+        fun from(uploadFileInfo: UploadFileInfo): FileCollection =
             FileCollection(
                 fileName = UUID.randomUUID().toString(),
                 originalFileName = uploadFileInfo.fileName,
                 extension = uploadFileInfo.extension,
                 fileSize = uploadFileInfo.totalSize,
-                uploadChatRoomId = ObjectId(uploadFileInfo.roomKey),
-                uploadUserId = ObjectId(uploadFileInfo.userKey),
+                uploadChatRoomId = ObjectId(uploadFileInfo.roomId),
+                uploadUserId = ObjectId(uploadFileInfo.userId),
             )
 
-        fun of(
+        fun from(
             uploadProfileVO: UploadFile.UploadProfile,
             fileExtension: String,
         ): FileCollection =
             FileCollection(
                 fileName = UUID.randomUUID().toString(),
-                originalFileName = uploadProfileVO.userKey + LocalDateTime.now(),
+                originalFileName = uploadProfileVO.userId + LocalDateTime.now(),
                 extension = fileExtension,
                 fileSize = uploadProfileVO.fileContent.size().toLong(),
-                uploadUserId = ObjectId(uploadProfileVO.userKey),
+                uploadUserId = ObjectId(uploadProfileVO.userId),
             )
     }
 }

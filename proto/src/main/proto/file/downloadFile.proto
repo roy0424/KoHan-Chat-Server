@@ -5,8 +5,8 @@ package com.kohan.proto.file.v1;
 message DownloadFileInfo{
   string fileName = 1;
   string extension = 2;
-  string roomKey = 3;
-  string userKey = 4;
+  string roomId = 3;
+  string userId = 4;
   int64 totalSize = 5;
 }
 
@@ -16,7 +16,7 @@ message FileData{
 }
 
 message FileDownloadRequest{
-  string fileKey = 1;
+  string fileId = 1;
   int32 chunkSize = 2;
 }
 

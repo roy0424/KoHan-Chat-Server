@@ -107,8 +107,8 @@ class FileServerTest
                                 .setFileName(testFile.name)
                                 .setExtension(testFile.extension)
                                 .setTotalSize(testFile.length() - (1024 * 1024 * 32))
-                                .setRoomKey(ObjectId.get().toHexString())
-                                .setUserKey(ObjectId.get().toHexString()),
+                                .setRoomId(ObjectId.get().toHexString())
+                                .setUserId(ObjectId.get().toHexString()),
                         ).build()
 
                 assertThrows<StatusException> {
@@ -139,7 +139,7 @@ class FileServerTest
                 val request =
                     DownloadFile.FileDownloadRequest
                         .newBuilder()
-                        .setFileKey(savedFileKey)
+                        .setFileId(savedFileKey)
                         .setChunkSize(1024)
                         .build()
 
@@ -218,8 +218,8 @@ class FileServerTest
                         println("${response.received} / ${response.total}")
                     }
 
-                    response.hasFileKey() -> {
-                        savedFileKey = response.fileKey
+                    response.hasFileId() -> {
+                        savedFileKey = response.fileId
                     }
 
                     response.hasMessage() -> {
@@ -249,8 +249,8 @@ class FileServerTest
                         .setFileName(file.name)
                         .setExtension(file.extension)
                         .setTotalSize(file.length())
-                        .setRoomKey(ObjectId.get().toHexString())
-                        .setUserKey(ObjectId.get().toHexString()),
+                        .setRoomId(ObjectId.get().toHexString())
+                        .setUserId(ObjectId.get().toHexString()),
                 ).build()
 
         private fun createChunkUploadVO(chunk: ByteArray): UploadFile.UploadLargeFile =

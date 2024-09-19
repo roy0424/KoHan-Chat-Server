@@ -26,7 +26,7 @@ class DownloadFileGrpcService(
             try {
                 val fileCollection =
                     withContext(Dispatchers.IO) {
-                        val optional = fileRepository.findById(ObjectId(request.fileKey))
+                        val optional = fileRepository.findById(ObjectId(request.fileId))
                         if (optional.isEmpty) {
                             throw IllegalStateException("Unregistered File Key")
                         }
@@ -56,7 +56,7 @@ class DownloadFileGrpcService(
         }
 
     private fun createInitialResponse(fileCollection: FileCollection): DownloadFile.FileDownloadResponse {
-        val uploadChatRoomKey = fileCollection.uploadChatRoomId
+        val uploadChatRoomId = fileCollection.uploadChatRoomId
 
         return DownloadFile.FileDownloadResponse
             .newBuilder()
@@ -66,8 +66,8 @@ class DownloadFileGrpcService(
                     .setFileName(fileCollection.originalFileName)
                     .setExtension(fileCollection.extension)
                     .setTotalSize(fileCollection.fileSize)
-                    .setRoomKey(if (uploadChatRoomKey != null) uploadChatRoomKey.toHexString() else "")
-                    .setUserKey(fileCollection.uploadUserId.toHexString()),
+                    .setRoomId(if (uploadChatRoomId != null) uploadChatRoomId.toHexString() else "")
+                    .setUserId(fileCollection.uploadUserId.toHexString()),
             ).build()
     }
 
