@@ -65,11 +65,11 @@ class FileServerTest
             runTest {
                 val testFile = ClassPathResource("DummyFiles/22mb.txt").file
                 val initialUploadVO = createInitialUploadVO(testFile)
-                val savedFileKey = uploadFile(testFile, false, initialUploadVO)
+                val savedFileId = uploadFile(testFile, false, initialUploadVO)
 
-                assertTrue(savedFileKey != "")
+                assertTrue(savedFileId != "")
 
-                val fileCollection = fileRepository.findById(ObjectId(savedFileKey))
+                val fileCollection = fileRepository.findById(ObjectId(savedFileId))
                 assertTrue(fileCollection.isPresent)
 
                 val savedFile = fileUtil.newFile(fileCollection.get().fileName)
@@ -82,11 +82,11 @@ class FileServerTest
             runTest {
                 val testFile = ClassPathResource("DummyFiles/22mb.jpg").file
                 val initialUploadVO = createInitialUploadVO(testFile)
-                val savedFileKey = uploadFile(testFile, true, initialUploadVO)
+                val savedFileId = uploadFile(testFile, true, initialUploadVO)
 
-                assertTrue(savedFileKey != "")
+                assertTrue(savedFileId != "")
 
-                val fileCollection = fileRepository.findById(ObjectId(savedFileKey))
+                val fileCollection = fileRepository.findById(ObjectId(savedFileId))
                 assertTrue(fileCollection.isPresent)
 
                 val savedFile = fileUtil.newFile(fileCollection.get().fileName)
@@ -134,12 +134,12 @@ class FileServerTest
             runTest {
                 val testFile = ClassPathResource("DummyFiles/test.txt").file
                 val initialUploadVO = createInitialUploadVO(testFile)
-                val savedFileKey = uploadFile(testFile, false, initialUploadVO)
+                val savedFileId = uploadFile(testFile, false, initialUploadVO)
 
                 val request =
                     DownloadFile.FileDownloadRequest
                         .newBuilder()
-                        .setFileId(savedFileKey)
+                        .setFileId(savedFileId)
                         .setChunkSize(1024)
                         .build()
 
@@ -211,7 +211,7 @@ class FileServerTest
             }
 
         private suspend fun handleUploadResponses(responses: Flow<UploadFile.UploadFileDTO>): String {
-            var savedFileKey = ""
+            var savedFileId = ""
             responses.collect { response ->
                 when {
                     response.hasReceived() and response.hasTotal() -> {
@@ -219,7 +219,7 @@ class FileServerTest
                     }
 
                     response.hasFileId() -> {
-                        savedFileKey = response.fileId
+                        savedFileId = response.fileId
                     }
 
                     response.hasMessage() -> {
@@ -227,7 +227,7 @@ class FileServerTest
                     }
                 }
             }
-            return savedFileKey
+            return savedFileId
         }
 
         private inline fun <reified T : Any> createGrpcClient(): T =

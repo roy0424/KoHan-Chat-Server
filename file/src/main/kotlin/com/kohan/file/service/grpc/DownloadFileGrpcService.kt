@@ -28,7 +28,7 @@ class DownloadFileGrpcService(
                     withContext(Dispatchers.IO) {
                         val optional = fileRepository.findById(ObjectId(request.fileId))
                         if (optional.isEmpty) {
-                            throw IllegalStateException("Unregistered File Key")
+                            throw IllegalStateException("Unregistered File Id")
                         }
                         optional.get()
                     }
