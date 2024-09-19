@@ -23,32 +23,32 @@ class FileCollection(
      *
      * If null, it's visible to everyone */
     @Indexed
-    var uploadChatRoomKey: ObjectId? = null,
+    var uploadChatRoomId: ObjectId? = null,
     /** upload user */
     @Indexed
-    var uploadUserKey: ObjectId,
+    var uploadUserId: ObjectId,
 ) : BaseCollection() {
     companion object {
-        fun to(uploadFileInfo: UploadFileInfo): FileCollection =
+        fun from(uploadFileInfo: UploadFileInfo): FileCollection =
             FileCollection(
                 fileName = UUID.randomUUID().toString(),
                 originalFileName = uploadFileInfo.fileName,
                 extension = uploadFileInfo.extension,
                 fileSize = uploadFileInfo.totalSize,
-                uploadChatRoomKey = ObjectId(uploadFileInfo.roomKey),
-                uploadUserKey = ObjectId(uploadFileInfo.userKey),
+                uploadChatRoomId = ObjectId(uploadFileInfo.roomId),
+                uploadUserId = ObjectId(uploadFileInfo.userId),
             )
 
-        fun to(
+        fun from(
             uploadProfileVO: UploadFile.UploadProfile,
             fileExtension: String,
         ): FileCollection =
             FileCollection(
                 fileName = UUID.randomUUID().toString(),
-                originalFileName = uploadProfileVO.userKey + LocalDateTime.now(),
+                originalFileName = uploadProfileVO.userId + LocalDateTime.now(),
                 extension = fileExtension,
                 fileSize = uploadProfileVO.fileContent.size().toLong(),
-                uploadUserKey = ObjectId(uploadProfileVO.userKey),
+                uploadUserId = ObjectId(uploadProfileVO.userId),
             )
     }
 }

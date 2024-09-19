@@ -3,14 +3,14 @@ syntax = "proto3";
 package com.kohan.proto.file.v1;
 
 message UploadFileInfo{
-  string fileName = 2;
-  string extension = 3;
-  string roomKey = 4;
-  string userKey = 5;
-  int64 totalSize = 6;
+  string fileName = 1;
+  string extension = 2;
+  string roomId = 3;
+  string userId = 4;
+  int64 totalSize = 5;
 }
 
-message UploadLageFile{
+message UploadLargeFile{
   oneof data{
     bytes chunk = 1;
     UploadFileInfo info = 2;
@@ -19,12 +19,12 @@ message UploadLageFile{
 
 message UploadProfile{
   bytes fileContent = 1;
-  string userKey = 2;
+  string userId = 2;
   optional int32 totalSize = 3;
 }
 
 message UploadFileDTO {
-  optional string fileKey = 1;
+  optional string fileId = 1;
   optional string message = 2;
   optional int64 received = 3;
   optional int64 total = 4;
@@ -32,6 +32,6 @@ message UploadFileDTO {
 
 service FileUploadService {
   rpc uploadProfile(UploadProfile) returns (UploadFileDTO) {}
-  rpc uploadLageFile(stream UploadLageFile) returns (stream UploadFileDTO) {}
-  rpc uploadLageImage(stream UploadLageFile) returns (stream UploadFileDTO) {}
+  rpc uploadLargeFile(stream UploadLargeFile) returns (stream UploadFileDTO) {}
+  rpc uploadLargeImage(stream UploadLargeFile) returns (stream UploadFileDTO) {}
 }
