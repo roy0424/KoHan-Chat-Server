@@ -22,6 +22,9 @@ dependencies {
                     .get()
                     .name,
         )
+        exclude(
+            module = project(":proto").name,
+        )
     }
     api(project(":shared-collection"))
     api(libs.kotlin.allopen)

@@ -9,12 +9,6 @@ spring:
 
 armeria:
   ports:
-    - port: ${FILE_PORT}
+    - port: ${REST_PORT}
       protocols:
         - HTTP
-
-kohan:
-  file:
-    savePath: ${FILE_SAVE_PATH}
-    profileExtensions: jpg
-    maxUploadFileSize: 2147483648
