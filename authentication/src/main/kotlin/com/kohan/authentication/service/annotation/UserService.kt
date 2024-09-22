@@ -18,9 +18,12 @@ import com.kohan.shared.collection.user.item.TokenInfo
 import com.kohan.shared.spring.converter.request.AccessDeviceRequestConverter
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler
 import com.kohan.shared.spring.exception.handler.MismatchedInputExceptionHandler
+import com.linecorp.armeria.common.AggregatedHttpRequest
 import com.linecorp.armeria.common.MediaTypeNames
+import com.linecorp.armeria.server.ServiceRequestContext
 import com.linecorp.armeria.server.annotation.Consumes
 import com.linecorp.armeria.server.annotation.ExceptionHandler
+import com.linecorp.armeria.server.annotation.Header
 import com.linecorp.armeria.server.annotation.Post
 import com.linecorp.armeria.server.annotation.ProducesJson
 import com.linecorp.armeria.server.annotation.RequestConverter
@@ -33,6 +36,7 @@ import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
+import ua_parser.Parser
 
 @Service
 @Validated
@@ -50,9 +54,14 @@ class UserService(
     suspend fun signUp(
         @Valid
         signUp: SignUp,
-        @RequestConverter(AccessDeviceRequestConverter::class)
-        accessDeviceInfo: AccessDeviceInfo,
+        ctx: ServiceRequestContext,
+        @Header("user-agent") userAgent: String,
     ): TokenDto {
+        val ip = ctx.remoteAddress().address.hostAddress
+        val accessDevice = Parser().parse(userAgent)
+
+        val accessDeviceInfo = AccessDeviceInfo(ip, accessDevice.userAgent.family + accessDevice.userAgent.major, accessDevice.os.family + accessDevice.os.major, accessDevice.device.family)
+
         if (withContext(Dispatchers.IO) {
                 userRepository.existsByEmail(signUp.email)
             }) throw UserErrorCode.DUPLICATED_EMAIL.businessException

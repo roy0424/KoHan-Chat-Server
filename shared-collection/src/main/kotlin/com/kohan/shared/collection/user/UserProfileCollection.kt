@@ -1,6 +1,7 @@
 package com.kohan.shared.collection.user
 
 import com.kohan.proto.rest.v1.UserProfileOuterClass
+import com.kohan.shared.collection.base.BaseCollection
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
@@ -16,7 +17,7 @@ data class UserProfileCollection(
     var profileImageFileId: String,
     /** User status message */
     var statusMessage: String? = null,
-) {
+): BaseCollection() {
     companion object {
         fun to(request: UserProfileOuterClass.UserProfile): UserProfileCollection =
             UserProfileCollection(
