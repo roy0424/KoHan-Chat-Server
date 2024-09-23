@@ -5,11 +5,7 @@ import com.kohan.authentication.repository.UserRepository
 import com.kohan.proto.authentication.v1.Authentication
 import com.kohan.proto.authentication.v1.AuthenticationServiceGrpcKt.AuthenticationServiceCoroutineImplBase
 import com.kohan.shared.armeria.exception.BusinessException
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 
