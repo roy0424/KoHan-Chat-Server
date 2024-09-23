@@ -10,18 +10,23 @@ import java.io.File
 object FileGrpcClient {
     private val port = dotenv()["FILE_PORT"]
 
-    private val client = GrpcClients.newClient(
-        "gproto+http://localhost:$port/grpc/v1/",
-        FileUploadServiceGrpcKt.FileUploadServiceCoroutineStub::class.java,
-    )
+    private val client =
+        GrpcClients.newClient(
+            "gproto+http://localhost:$port/grpc/v1/",
+            FileUploadServiceGrpcKt.FileUploadServiceCoroutineStub::class.java,
+        )
 
-    suspend fun uploadProfile(file: File, userId: String): String {
-        return client.uploadProfile(
-            UploadFile.UploadProfile.newBuilder()
-                .setFileContent(ByteString.copyFrom(file.readBytes()))
-                .setUserId(userId)
-                .setTotalSize(file.length().toInt())
-                .build()
-        ).fileId
-    }
+    suspend fun uploadProfile(
+        file: File,
+        userId: String,
+    ): String =
+        client
+            .uploadProfile(
+                UploadFile.UploadProfile
+                    .newBuilder()
+                    .setFileContent(ByteString.copyFrom(file.readBytes()))
+                    .setUserId(userId)
+                    .setTotalSize(file.length().toInt())
+                    .build(),
+            ).fileId
 }
