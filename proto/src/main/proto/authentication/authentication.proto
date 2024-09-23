@@ -7,10 +7,10 @@ message UserToken {
 }
 
 message UserDto {
-  string objectId = 1;
-  string email = 2;
-  string nickname = 3;
-  string profileImageUrl = 4;
+  oneof response{
+    string userId = 1;
+    string error = 2;
+  }
 }
 
 service AuthenticationService {
