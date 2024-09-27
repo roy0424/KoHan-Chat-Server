@@ -21,7 +21,7 @@ abstract class BaseCollection(
     fun delete() {
         deleteAt = LocalDateTime.now()
     }
-
+    // getId nullable ?
     override fun getId(): ObjectId? = _id
 
     override fun isNew(): Boolean = createAt == null

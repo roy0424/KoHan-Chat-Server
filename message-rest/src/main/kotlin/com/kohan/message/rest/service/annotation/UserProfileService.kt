@@ -2,10 +2,10 @@ package com.kohan.message.rest.service.annotation
 
 import com.kohan.message.rest.dto.UserProfileDto
 import com.kohan.message.rest.exception.code.UserErrorCode
-import com.kohan.message.rest.repository.UserProfileRepository
-import com.kohan.message.rest.vo.Nickname
-import com.kohan.message.rest.vo.ProfileImage
-import com.kohan.message.rest.vo.StatusMessage
+import com.kohan.message.rest.repository.user.profile.UserProfileRepository
+import com.kohan.message.rest.vo.user.profile.Nickname
+import com.kohan.message.rest.vo.user.profile.ProfileImage
+import com.kohan.message.rest.vo.user.profile.StatusMessage
 import com.kohan.shared.armeria.client.grpc.FileGrpcClient
 import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler

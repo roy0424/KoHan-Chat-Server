@@ -1,4 +1,4 @@
-package com.kohan.message.rest.repository
+package com.kohan.message.rest.repository.user.profile
 
 import com.kohan.shared.collection.user.UserProfileCollection
 import org.bson.types.ObjectId

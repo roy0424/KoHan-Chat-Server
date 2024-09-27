@@ -1,4 +1,4 @@
-package com.kohan.message.rest.vo
+package com.kohan.message.rest.vo.user.profile
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size

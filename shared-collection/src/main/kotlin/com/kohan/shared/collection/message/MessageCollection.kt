@@ -14,9 +14,12 @@ class MessageCollection(
     var sender: ObjectId,
     /** 채팅방 키 */
     @Indexed
-    var chatRoom: ObjectId,
+    var chatRoomId: ObjectId,
     /** 답장할 메시지 키 */
     var toReply: ObjectId?,
     /** 메시지 반응 목록 */
     var reactions: MutableList<Reaction>,
+    /** 읽은 사람 목록 */
+    // 자기자신은 ?
+    var readUsers: MutableList<ObjectId>,
 ) : BaseCollection()

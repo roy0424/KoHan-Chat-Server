@@ -1,6 +1,6 @@
 package com.kohan.message.rest.service.grpc
 
-import com.kohan.message.rest.repository.UserProfileRepository
+import com.kohan.message.rest.repository.user.profile.UserProfileRepository
 import com.kohan.proto.rest.v1.UserProfileOuterClass
 import com.kohan.proto.rest.v1.UserProfileServiceGrpcKt
 import com.kohan.shared.collection.user.UserProfileCollection
