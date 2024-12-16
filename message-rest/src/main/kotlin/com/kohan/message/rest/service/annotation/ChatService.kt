@@ -1,14 +1,29 @@
 package com.kohan.message.rest.service.annotation
 
 import com.kohan.message.rest.dto.ChatRoomDto
+import com.kohan.message.rest.dto.ChatRoomWithLatestMessageInfoDto
+import com.kohan.message.rest.dto.MessageDto
 import com.kohan.message.rest.exception.code.UserErrorCode
 import com.kohan.message.rest.repository.chat.room.ChatRoomRepository
+import com.kohan.message.rest.repository.message.CustomMessageRepository
 import com.kohan.message.rest.repository.message.MessageRepository
-import com.kohan.message.rest.dto.MessageDto
-import com.kohan.message.rest.vo.chat.room.*
+import com.kohan.message.rest.util.addItemInList
+import com.kohan.message.rest.util.isExpiredAfterDuration
+import com.kohan.message.rest.util.transformList
+import com.kohan.message.rest.vo.chat.room.CreateChatRoom
+import com.kohan.message.rest.vo.chat.room.InviteChatRoom
+import com.kohan.message.rest.vo.chat.room.LeaveChatRoom
+import com.kohan.message.rest.vo.chat.room.UpdateChatRoomName
+import com.kohan.message.rest.vo.chat.room.UpdateChatRoomProfileImage
+import com.kohan.message.rest.vo.message.AddReaction
+import com.kohan.message.rest.vo.message.DeleteMessage
+import com.kohan.message.rest.vo.message.DeleteReaction
+import com.kohan.message.rest.vo.message.SendMessage
 import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
 import com.kohan.shared.collection.chatRoom.ChatRoomCollection
+import com.kohan.shared.collection.message.item.Reaction
 import com.kohan.shared.enum.chatRoom.ChatRoomType
+import com.kohan.shared.enum.message.item.ReactionType
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler
 import com.kohan.shared.spring.exception.handler.MismatchedInputExceptionHandler
 import com.linecorp.armeria.server.ServiceRequestContext
@@ -20,8 +35,12 @@ import com.linecorp.armeria.server.annotation.ProducesJson
 import io.netty.util.AttributeKey
 import jakarta.validation.Valid
 import org.bson.types.ObjectId
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.validation.annotation.Validated
+import java.util.Optional
 
 @Service
 @Validated
@@ -30,7 +49,8 @@ import org.springframework.validation.annotation.Validated
 @ExceptionHandler(MismatchedInputExceptionHandler::class)
 class ChatService(
     private val chatRoomRepository: ChatRoomRepository,
-    private val messageRepository: MessageRepository
+    private val messageRepository: MessageRepository,
+    private val customMessageRepository: CustomMessageRepository,
 ) {
     /**
      * 라인:
@@ -42,20 +62,24 @@ class ChatService(
     @Get("/chat-rooms")
     @ProducesJson
     fun getChatRoomList(
-        ctx: ServiceRequestContext
-    ): List<ChatRoomDto> {
+        @Param("page")
+        page: Int = 0,
+        size: Int = 10,
+        ctx: ServiceRequestContext,
+    ): Page<ChatRoomWithLatestMessageInfoDto> {
+        // 유저가 안읽은 메시지 챗룸 아이디 distinct 로 종합해서 필요한 챗룸만 불러오기
+        // 최적화 필요
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
-        val chatRoomList = chatRoomRepository.findByUserListContains(ObjectId(userId))
-        /**
-         * todo 채팅방에 마지막 메시지 및 쌓인 메시지 수를 가져오는 로직 추가
-         * aggregate 로 최적화 가능할 것으로 보임
-         * 대신 코드가 복잡해질 수 있음
-         * aggregate 로 최적화하지 않으면
-         * 채팅방 100개 조회하면 1 + 100(latestMessage) + 100(unreadMessagesCount) = 201번의 쿼리가 나감
-         * 그리고 카톡 방식으로 해야 latestMessage nullable 하지 않음
-         * 조회할때 pagination 할것인지
-         **/
-        return transformList(chatRoomList) { ChatRoomDto.from(it) }
+        val pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("latestMessage.createAt")))
+        val chatRoomList = chatRoomRepository.findByUserListContainsAndDeleteAtNotNull(ObjectId(userId), pageable)
+
+        val chatRoomWithLatestMessageInfoList =
+            chatRoomList.map { chatRoom ->
+                val latestMessageInfo = customMessageRepository.findLatestMessageAndUnreadCount(chatRoom._id, ObjectId(userId))
+                ChatRoomWithLatestMessageInfoDto.from(chatRoom, latestMessageInfo)
+            }
+
+        return chatRoomWithLatestMessageInfoList
     }
 
     // 채팅방 조회
@@ -64,23 +88,23 @@ class ChatService(
     fun getChatRoom(
         @Param("chatRoomId")
         chatRoomId: String,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): ChatRoomDto {
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
-        val chatRoom = getChatRoomWithUserId(chatRoomId, userId)
+        val chatRoom = getValidChatRoomWithUserId(chatRoomRepository.findById(ObjectId(chatRoomId)), userId)
 
         return ChatRoomDto.from(chatRoom)
     }
 
     // 히스토리 조회
-    @Get("/chat-rooms/{chatRoomId}/messages/{latestReadMessageId}")
+    @Get("/chat-rooms/{chatRoomId}/messages/{latestReadMessageId}/history")
     @ProducesJson
     fun getChatRoomMessages(
         @Param("chatRoomId")
         chatRoomId: String,
         @Param("latestReadMessageId")
         messageId: String,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): List<MessageDto> {
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
 
@@ -89,7 +113,7 @@ class ChatService(
         }
 
         val messageList =
-            messageRepository.findByChatRoomIdAndIdGreaterThanOrderByIdAsc(ObjectId(chatRoomId), ObjectId(messageId))
+            messageRepository.findByChatRoomIdAndDeletedAtNotNullAndIdGreaterThanOrderByIdAsc(ObjectId(chatRoomId), ObjectId(messageId))
 
         return transformList(messageList) { MessageDto.from(it) }
     }
@@ -100,7 +124,7 @@ class ChatService(
     fun createChatRoom(
         @Valid
         req: CreateChatRoom,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): ChatRoomDto {
         /**
          * todo 채팅방 생성 로직 추가
@@ -115,7 +139,7 @@ class ChatService(
         }
 
         val chatRoom = chatRoomRepository.save(req.toChatRoomCollection())
-        val message = messageRepository.save(req.toMessageCollection(chatRoom._id))
+        messageRepository.save(req.toMessageCollection(chatRoom._id))
 
         // todo kafka 로 메시지 전달
 
@@ -128,7 +152,7 @@ class ChatService(
     fun updateChatRoomName(
         @Valid
         req: UpdateChatRoomName,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): ChatRoomDto {
         /**
          * todo 채팅방 업데이트 로직 추가
@@ -136,14 +160,11 @@ class ChatService(
          * 2. kafka 로 메시지 전달
          **/
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
-        val chatRoom = getChatRoomWithUserId(req.chatRoomId, userId)
-
+        val chatRoom = getValidChatRoomWithUserId(chatRoomRepository.findById(ObjectId(req.chatRoomId)), userId)
         chatRoom.name = req.name
-        val updatedChatRoom = chatRoomRepository.save(chatRoom)
-
         // todo kafka 로 메시지 전달
 
-        return ChatRoomDto.from(updatedChatRoom)
+        return ChatRoomDto.from(chatRoomRepository.save(chatRoom))
     }
 
     @Post("/chat-rooms/update/profile-image")
@@ -151,10 +172,10 @@ class ChatService(
     fun updateChatRoomProfileImage(
         @Valid
         req: UpdateChatRoomProfileImage,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): ChatRoomDto {
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
-        val chatRoom = getChatRoomWithUserId(req.chatRoomId, userId)
+        val chatRoom = getValidChatRoomWithUserId(chatRoomRepository.findById(ObjectId(req.chatRoomId)), userId)
 
         // todo file grpc uploadChatRoomProfileImage
 
@@ -169,24 +190,25 @@ class ChatService(
     fun inviteChatRoom(
         @Valid
         req: InviteChatRoom,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): ChatRoomDto {
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
+        val chatRoom = getValidChatRoomWithUserId(chatRoomRepository.findById(ObjectId(req.chatRoomId)), userId)
 
-        return getChatRoomWithUserId(req.chatRoomId, userId)
+        return chatRoom
             .takeIf { it.type == ChatRoomType.GROUP }
             ?.takeUnless { it.userList.contains(ObjectId(req.userId)) }
-            ?.let { chatRoom ->
-                val updatedUserList = chatRoom.userList + ObjectId(req.userId)
-                val updatedChatRoom = chatRoom.apply {
-                    userList = updatedUserList.toMutableList()
-                }
+            ?.let {
+                val updatedUserList = addItemInList(it.userList, ObjectId(req.userId))
+                val updatedChatRoom =
+                    it.apply {
+                        userList = updatedUserList.toMutableList()
+                    }
                 chatRoomRepository.save(updatedChatRoom)
             }?.let(ChatRoomDto::from)
             ?: throw when {
-                getChatRoomWithUserId(req.chatRoomId, userId).type != ChatRoomType.GROUP ->
+                chatRoom.type != ChatRoomType.GROUP ->
                     UserErrorCode.NOT_GROUP_CHAT_ROOM.businessException
-
                 else -> UserErrorCode.ALREADY_IN_CHAT_ROOM.businessException
             }
     }
@@ -197,7 +219,7 @@ class ChatService(
     fun leaveChatRoom(
         @Valid
         req: LeaveChatRoom,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): ChatRoomDto {
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
 
@@ -205,7 +227,7 @@ class ChatService(
             throw UserErrorCode.USER_NOT_LEAVING_USER.businessException
         }
 
-        return getChatRoomWithUserId(req.chatRoomId, userId)
+        return getValidChatRoomWithUserId(chatRoomRepository.findById(ObjectId(req.chatRoomId)), userId)
             .let { chatRoom ->
                 when (chatRoom.userList.size) {
                     1 -> {
@@ -214,10 +236,12 @@ class ChatService(
                         chatRoomRepository.save(updatedChatRoom)
                         ChatRoomDto.from(updatedChatRoom)
                     }
+
                     else -> {
-                        val updatedChatRoom = chatRoom.apply {
-                            userList = chatRoom.userList.filterNot { it == ObjectId(userId) }.toMutableList()
-                        }
+                        val updatedChatRoom =
+                            chatRoom.apply {
+                                userList = chatRoom.userList.filterNot { it == ObjectId(userId) }.toMutableList()
+                            }
                         chatRoomRepository.save(updatedChatRoom)
                         ChatRoomDto.from(updatedChatRoom)
                     }
@@ -226,27 +250,139 @@ class ChatService(
     }
 
     // 메시지 전송
+    @Post("/messages/send")
+    @ProducesJson
+    fun sendMessage(
+        @Valid
+        req: SendMessage,
+        ctx: ServiceRequestContext,
+    ): MessageDto {
+        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
 
-    // 메시지 삭제
+        validateSender(userId, req.sender)
 
-    // 리액션 달기
+        if (!chatRoomRepository.existsById(ObjectId(req.chatRoomId))) {
+            throw UserErrorCode.NOT_FOUND_CHAT_ROOM.businessException
+        }
 
-    // 리액션 삭제
+        if (!chatRoomRepository.existsByIdAndUserListContains(ObjectId(req.chatRoomId), ObjectId(userId))) {
+            throw UserErrorCode.NOT_IN_CHAT_ROOM.businessException
+        }
 
+        val message = messageRepository.save(req.toMessageCollection())
 
-    /**
-     * 함수형 보고 영감받은거
-     */
-    private fun <T1, T2> transformList(list: List<T1>, transform: (T1) -> T2): List<T2> {
-        return list.map { transform(it) }
+        // todo kafka 로 메시지 전달
+
+        return MessageDto.from(message)
     }
 
-    private fun getChatRoomWithUserId(chatRoomId: String, userId: String): ChatRoomCollection {
-        return chatRoomRepository.findById(ObjectId(chatRoomId))
-            .orElseThrow {
-                UserErrorCode.NOT_FOUND_CHAT_ROOM.businessException
-            }?.takeIf {
-                it.userList.contains(ObjectId(userId))
-            } ?: throw UserErrorCode.NOT_IN_CHAT_ROOM.businessException
+    // 메시지 삭제
+    @Post("/messages/delete")
+    @ProducesJson
+    fun deleteMessage(
+        @Valid
+        req: DeleteMessage,
+        ctx: ServiceRequestContext,
+    ) {
+        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
+
+        val message =
+            messageRepository
+                .findById(ObjectId(req.messageId))
+                .orElseThrow { UserErrorCode.NOT_FOUND_MESSAGE.businessException }
+                .apply {
+                    validateSender(userId, sender.toString())
+                    require(!isExpiredAfterDuration(createAt!!, 5)) { throw UserErrorCode.MESSAGE_NOT_DELETABLE.businessException }
+                }
+
+        // todo kafka 로 메시지 전달
+
+        message.delete()
+        messageRepository.save(message)
+    }
+
+    // 리액션 달기
+    @Post("/messages/reactions/add")
+    @ProducesJson
+    fun addReaction(
+        @Valid
+        req: AddReaction,
+        ctx: ServiceRequestContext,
+    ): MessageDto {
+        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
+
+        validateSender(userId, req.sender)
+
+        return messageRepository
+            .findById(ObjectId(req.messageId))
+            .map { message ->
+                val existingReaction = message.reactions.find { it.senderUser == ObjectId(userId) }
+
+                val updatedReactions =
+                    existingReaction?.let { reaction ->
+                        message.reactions.map {
+                            if (reaction.senderUser == ObjectId(req.sender)) {
+                                reaction.apply { type = ReactionType.valueOf(req.type) }
+                            } else {
+                                reaction
+                            }
+                        }
+                    } ?: addItemInList(message.reactions, Reaction(ObjectId(req.sender), ReactionType.valueOf(req.type)))
+                message.apply {
+                    reactions = updatedReactions.toMutableList()
+                }
+            }.map { updatedMessage ->
+                messageRepository.save(updatedMessage)
+                MessageDto.from(updatedMessage)
+            }.orElseThrow { throw UserErrorCode.NOT_FOUND_MESSAGE.businessException }
+    }
+
+    // 리액션 삭제
+    @Post("/messages/reactions/delete")
+    @ProducesJson
+    fun deleteReaction(
+        @Valid
+        req: DeleteReaction,
+        ctx: ServiceRequestContext,
+    ): MessageDto {
+        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
+
+        validateSender(userId, req.sender)
+
+        return messageRepository
+            .findById(ObjectId(req.messageId))
+            .map { message ->
+                val existingReaction = message.reactions.find { it.senderUser == ObjectId(userId) }
+
+                val updatedReactions =
+                    existingReaction?.let {
+                        message.reactions.filterNot { it.senderUser == ObjectId(req.sender) }
+                    } ?: message.reactions
+                message.apply {
+                    reactions = updatedReactions.toMutableList()
+                }
+            }.map { updatedMessage ->
+                messageRepository.save(updatedMessage)
+                MessageDto.from(updatedMessage)
+            }.orElseThrow { throw UserErrorCode.NOT_FOUND_MESSAGE.businessException }
+    }
+
+    private fun getValidChatRoomWithUserId(
+        chatRoom: Optional<ChatRoomCollection>,
+        userId: String,
+    ): ChatRoomCollection {
+        chatRoom
+            .orElseThrow { UserErrorCode.NOT_FOUND_CHAT_ROOM.businessException }
+            ?.takeIf { it.userList.contains(ObjectId(userId)) }
+            ?: throw UserErrorCode.NOT_IN_CHAT_ROOM.businessException
+
+        return chatRoom.get()
+    }
+
+    private fun validateSender(
+        userId: String,
+        sender: String,
+    ) {
+        require(userId == sender) { throw UserErrorCode.USER_NOT_SENDER.businessException }
     }
 }

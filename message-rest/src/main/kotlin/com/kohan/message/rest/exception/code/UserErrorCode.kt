@@ -5,7 +5,7 @@ import com.linecorp.armeria.common.HttpStatus
 
 enum class UserErrorCode(
     val businessException: BusinessException,
-    ) {
+) {
     NOT_FOUND_USER(
         BusinessException(
             HttpStatus.BAD_REQUEST,
@@ -52,6 +52,30 @@ enum class UserErrorCode(
         BusinessException(
             HttpStatus.BAD_REQUEST,
             mapOf("code" to "USER_008", "message" to "User not leaving user"),
+        ),
+    ),
+    USER_NOT_SENDER(
+        BusinessException(
+            HttpStatus.BAD_REQUEST,
+            mapOf("code" to "USER_009", "message" to "User not sender"),
+        ),
+    ),
+    NOT_FOUND_MESSAGE(
+        BusinessException(
+            HttpStatus.BAD_REQUEST,
+            mapOf("code" to "USER_010", "message" to "Not found message with condition"),
+        ),
+    ),
+    MESSAGE_NOT_DELETABLE(
+        BusinessException(
+            HttpStatus.BAD_REQUEST,
+            mapOf("code" to "USER_011", "message" to "Message not deletable"),
+        ),
+    ),
+    NOT_FOUND_REACTION(
+        BusinessException(
+            HttpStatus.BAD_REQUEST,
+            mapOf("code" to "USER_012", "message" to "Not found reaction with condition"),
         ),
     ),
 }

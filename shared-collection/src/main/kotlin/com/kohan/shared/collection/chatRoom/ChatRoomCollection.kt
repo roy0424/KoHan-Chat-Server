@@ -5,7 +5,7 @@ import com.kohan.shared.enum.chatRoom.ChatRoomType
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document(collation = "chat-room")
+@Document(collection = "chat-room")
 class ChatRoomCollection(
     /** 채팅방 이름 */
     var name: String,

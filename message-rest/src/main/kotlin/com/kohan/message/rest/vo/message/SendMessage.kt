@@ -1,18 +1,26 @@
 package com.kohan.message.rest.vo.message
 
+import com.kohan.shared.collection.message.MessageCollection
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import org.bson.types.ObjectId
 
 class SendMessage(
     @field:NotNull(message = "Please enter a content.")
-    var content: Any,
-
+    val content: Any,
     @field:NotBlank(message = "Please enter a sender id.")
-    var sender: String,
-
+    val sender: String,
     @field:NotBlank(message = "Please enter a chat room id.")
-    var chatRoomId: String,
-
-    var toReply: String?,
+    val chatRoomId: String,
+    val toReply: String? = null,
 ) {
+    fun toMessageCollection(): MessageCollection =
+        MessageCollection(
+            content = content,
+            sender = ObjectId(sender),
+            chatRoomId = ObjectId(chatRoomId),
+            toReply = toReply?.let { ObjectId(it) },
+            reactions = mutableListOf(),
+            readUsers = mutableListOf(),
+        )
 }
