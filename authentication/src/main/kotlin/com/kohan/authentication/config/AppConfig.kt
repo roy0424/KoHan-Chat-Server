@@ -1,7 +1,7 @@
 package com.kohan.authentication.config
 
 import com.kohan.authentication.service.annotation.UserService
-import com.kohan.authentication.service.grpc.AuthenticationServiceImpl
+import com.kohan.authentication.service.grpc.AuthenticationGrpcService
 import com.linecorp.armeria.server.docs.DocService
 import com.linecorp.armeria.server.grpc.GrpcService
 import com.linecorp.armeria.server.logging.AccessLogWriter
@@ -15,7 +15,7 @@ class AppConfig {
     @Bean
     fun armeriaServerConfigurator(
         userService: UserService,
-        authenticationServiceImpl: AuthenticationServiceImpl,
+        authenticationGrpcService: AuthenticationGrpcService,
     ): ArmeriaServerConfigurator =
         ArmeriaServerConfigurator { serverBuilder ->
             serverBuilder.annotatedService("/api", userService)
@@ -23,7 +23,7 @@ class AppConfig {
                 "prefix:/grpc/v1",
                 GrpcService
                     .builder()
-                    .addService(authenticationServiceImpl)
+                    .addService(authenticationGrpcService)
                     .enableUnframedRequests(true)
                     .build(),
             )

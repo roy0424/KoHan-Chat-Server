@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 
 @Service
-class AuthenticationServiceImpl(
+class AuthenticationGrpcService(
     private val userRepository: UserRepository,
 ) : AuthenticationServiceCoroutineImplBase() {
     override suspend fun authenticateUser(request: Authentication.UserToken): Authentication.UserDto {

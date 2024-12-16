@@ -1,10 +1,12 @@
 package com.kohan.file.service.grpc
 
 import com.google.protobuf.ByteString
+import com.kohan.file.exception.code.FileErrorCode
 import com.kohan.file.repository.FileRepository
 import com.kohan.file.util.FileUtil
 import com.kohan.proto.file.v1.FileUploadServiceGrpcKt
 import com.kohan.proto.file.v1.UploadFile
+import com.kohan.shared.armeria.exception.BusinessException
 import com.kohan.shared.collection.file.FileCollection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +95,7 @@ class UploadFileGrpcService(
             }
             close()
             newFile.delete()
-            throw IllegalStateException("A larger file was sent than expected.")
+            throw FileErrorCode.EXCEEDED_TOTAL_SIZE.businessException
         }
 
         suspend fun done(): UploadFile.UploadFileDTO {
@@ -161,10 +163,10 @@ class UploadFileGrpcService(
                     }
 
                     request.hasChunk() && !uploadingFile.isInit() -> {
-                        throw IllegalStateException("Before upload a file, you must send file info.")
+                        throw FileErrorCode.NOT_RECEIVING_FILE_INFO.businessException
                     }
                 }
-            } catch (e: IllegalStateException) {
+            } catch (e: BusinessException) {
                 currentCoroutineContext().cancel(CancellationException(e.message))
             }
         }
@@ -173,7 +175,7 @@ class UploadFileGrpcService(
     private fun checkUploadInfo(request: UploadFile.UploadFileInfo) {
         // todo: Validation
         if (request.totalSize > maxUploadFileSize) {
-            throw IllegalStateException("The maximum upload size is $maxUploadFileSize Byte")
+            throw FileErrorCode.EXCEEDED_MAXIMUM_UPLOAD_SIZE.businessException
         }
     }
 }
