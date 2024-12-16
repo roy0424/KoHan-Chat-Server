@@ -26,14 +26,18 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.springframework.test.annotation.DirtiesContext
 
 @SpringBootTest
+@EnableAutoConfiguration
 @AutoConfigureDataMongo
+@DirtiesContext
 class ChatServiceTest
     @Autowired
     constructor(
