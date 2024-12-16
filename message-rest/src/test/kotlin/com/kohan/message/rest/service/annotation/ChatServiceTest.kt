@@ -1,7 +1,6 @@
 package com.kohan.message.rest.service
 
 import com.kohan.message.rest.repository.chat.room.ChatRoomRepository
-import com.kohan.message.rest.repository.message.CustomMessageRepository
 import com.kohan.message.rest.repository.message.MessageRepository
 import com.kohan.message.rest.service.annotation.ChatService
 import com.kohan.message.rest.vo.chat.room.CreateChatRoom
