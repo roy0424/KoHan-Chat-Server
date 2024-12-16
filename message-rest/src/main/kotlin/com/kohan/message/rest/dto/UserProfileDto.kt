@@ -1,7 +1,6 @@
 package com.kohan.message.rest.dto
 
 import com.kohan.shared.collection.user.UserProfileCollection
-import org.bson.types.ObjectId
 
 class UserProfileDto(
     var nickname: String,

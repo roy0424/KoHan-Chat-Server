@@ -18,7 +18,6 @@ import com.kohan.shared.collection.user.item.TokenInfo
 import com.kohan.shared.spring.converter.request.AccessDeviceRequestConverter
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler
 import com.kohan.shared.spring.exception.handler.MismatchedInputExceptionHandler
-import com.linecorp.armeria.common.AggregatedHttpRequest
 import com.linecorp.armeria.common.MediaTypeNames
 import com.linecorp.armeria.server.ServiceRequestContext
 import com.linecorp.armeria.server.annotation.Consumes
@@ -29,7 +28,6 @@ import com.linecorp.armeria.server.annotation.ProducesJson
 import com.linecorp.armeria.server.annotation.RequestConverter
 import com.linecorp.armeria.server.annotation.RequestObject
 import jakarta.validation.Valid
-import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.dao.DuplicateKeyException
@@ -37,6 +35,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 import ua_parser.Parser
+import java.time.LocalDateTime
 
 @Service
 @Validated
@@ -60,25 +59,34 @@ class UserService(
         val ip = ctx.remoteAddress().address.hostAddress
         val accessDevice = Parser().parse(userAgent)
 
-        val accessDeviceInfo = AccessDeviceInfo(ip, accessDevice.userAgent.family + accessDevice.userAgent.major, accessDevice.os.family + accessDevice.os.major, accessDevice.device.family)
+        val accessDeviceInfo =
+            AccessDeviceInfo(
+                ip,
+                accessDevice.userAgent.family + accessDevice.userAgent.major,
+                accessDevice.os.family + accessDevice.os.major,
+                accessDevice.device.family,
+            )
 
         if (withContext(Dispatchers.IO) {
                 userRepository.existsByEmail(signUp.email)
-            }) throw UserErrorCode.DUPLICATED_EMAIL.businessException
-
+            }
+        ) {
+            throw UserErrorCode.DUPLICATED_EMAIL.businessException
+        }
 
         val newUser = userUtil.toUserCollection(signUp)
         val (userCollection, newToken) = saveUserWithNewToken(newUser, accessDeviceInfo)
 
-        val profileImageFileId = FileGrpcClient.uploadProfile(
-            signUp.profileImage.file(),
-            userCollection._id.toHexString()
-        )
+        val profileImageFileId =
+            FileGrpcClient.uploadProfile(
+                signUp.profileImage.file(),
+                userCollection._id.toHexString(),
+            )
 
         RestGrpcClient.initUserProfile(
             userCollection._id.toHexString(),
             signUp.nickname,
-            profileImageFileId
+            profileImageFileId,
         )
 
         return TokenDto.from(newToken)

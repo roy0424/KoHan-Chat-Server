@@ -9,31 +9,40 @@ import java.time.LocalDateTime
 object PushGrpcClient {
     private val port = dotenv()["PUSH_PORT"]
 
-    private val client = GrpcClients.newClient(
-        "gproto+http://localhost:$port/grpc/v1/",
-        FCMTokenServiceGrpcKt.FCMTokenServiceCoroutineStub::class.java,
-    )
+    private val client =
+        GrpcClients.newClient(
+            "gproto+http://localhost:$port/grpc/v1/",
+            FCMTokenServiceGrpcKt.FCMTokenServiceCoroutineStub::class.java,
+        )
 
-    suspend fun registerFCMToken(userId: String, fcmToken: String) {
+    suspend fun registerFCMToken(
+        userId: String,
+        fcmToken: String,
+    ) {
         client.registerFCMToken(
-            FcmToken.RegisterFCMToken.newBuilder()
+            FcmToken.RegisterFCMToken
+                .newBuilder()
                 .setFcmTokenInfo(
-                    FcmToken.FCMTokenInfo.newBuilder()
+                    FcmToken.FCMTokenInfo
+                        .newBuilder()
                         .setUserId(userId)
                         .setToken(fcmToken)
-                        .build()
-                )
-                .setAccessedAt(LocalDateTime.now().toString())
-                .build()
+                        .build(),
+                ).setAccessedAt(LocalDateTime.now().toString())
+                .build(),
         )
     }
 
-    suspend fun unregisterFCMToken(userId: String, fcmToken: String) {
+    suspend fun unregisterFCMToken(
+        userId: String,
+        fcmToken: String,
+    ) {
         client.unregisterFCMToken(
-            FcmToken.FCMTokenInfo.newBuilder()
+            FcmToken.FCMTokenInfo
+                .newBuilder()
                 .setToken(fcmToken)
                 .setUserId(userId)
-                .build()
+                .build(),
         )
     }
 }

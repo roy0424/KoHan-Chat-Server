@@ -31,16 +31,18 @@ import org.springframework.validation.annotation.Validated
 @ExceptionHandler(ConstraintViolationExceptionHandler::class)
 @ExceptionHandler(MismatchedInputExceptionHandler::class)
 class UserProfileService(
-    private val userProfileRepository: UserProfileRepository
+    private val userProfileRepository: UserProfileRepository,
 ) {
     @Get
     @ProducesJson
     fun getUserProfile(ctx: ServiceRequestContext): UserProfileDto {
-        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))
-            ?: throw UserErrorCode.UNAUTHORIZED.businessException
+        val userId: String =
+            ctx.attr(AttributeKey.valueOf("userId"))
+                ?: throw UserErrorCode.UNAUTHORIZED.businessException
 
-        val user = userProfileRepository.findByUserId(ObjectId(userId))
-            ?: throw UserErrorCode.NOT_FOUND_USER.businessException
+        val user =
+            userProfileRepository.findByUserId(ObjectId(userId))
+                ?: throw UserErrorCode.NOT_FOUND_USER.businessException
 
         return UserProfileDto.from(user)
     }
@@ -50,16 +52,22 @@ class UserProfileService(
     fun updateNickname(
         @Valid
         req: Nickname,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): UserProfileDto {
         val nickname = req.nickname
 
-        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))
-            ?: throw UserErrorCode.UNAUTHORIZED.businessException
+        val userId: String =
+            ctx.attr(AttributeKey.valueOf("userId"))
+                ?: throw UserErrorCode.UNAUTHORIZED.businessException
 
-        val user = userProfileRepository.findByUserId(ObjectId(userId))
-            ?.let { collection -> collection.nickname = nickname; collection }
-            ?: throw UserErrorCode.NOT_FOUND_USER.businessException
+        val user =
+            userProfileRepository
+                .findByUserId(ObjectId(userId))
+                ?.let { collection ->
+                    collection.nickname = nickname
+                    collection
+                }
+                ?: throw UserErrorCode.NOT_FOUND_USER.businessException
 
         return UserProfileDto.from(userProfileRepository.save(user))
     }
@@ -69,16 +77,22 @@ class UserProfileService(
     fun updateStatusMessage(
         @Valid
         req: StatusMessage,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): UserProfileDto {
         val statusMessage = req.statusMessage
 
-        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))
-            ?: throw UserErrorCode.UNAUTHORIZED.businessException
+        val userId: String =
+            ctx.attr(AttributeKey.valueOf("userId"))
+                ?: throw UserErrorCode.UNAUTHORIZED.businessException
 
-        val user = userProfileRepository.findByUserId(ObjectId(userId))
-            ?.let { collection -> collection.statusMessage = statusMessage; collection }
-            ?: throw UserErrorCode.NOT_FOUND_USER.businessException
+        val user =
+            userProfileRepository
+                .findByUserId(ObjectId(userId))
+                ?.let { collection ->
+                    collection.statusMessage = statusMessage
+                    collection
+                }
+                ?: throw UserErrorCode.NOT_FOUND_USER.businessException
 
         return UserProfileDto.from(userProfileRepository.save(user))
     }
@@ -89,20 +103,21 @@ class UserProfileService(
     suspend fun updateProfileImage(
         @Valid
         req: ProfileImage,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): UserProfileDto {
         val profileImage = req.profileImage
 
-        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))
-            ?: throw UserErrorCode.UNAUTHORIZED.businessException
+        val userId: String =
+            ctx.attr(AttributeKey.valueOf("userId"))
+                ?: throw UserErrorCode.UNAUTHORIZED.businessException
 
-        val user = withContext(Dispatchers.IO) {
-            userProfileRepository.findByUserId(ObjectId(userId))
-        } ?: throw UserErrorCode.NOT_FOUND_USER.businessException
+        val user =
+            withContext(Dispatchers.IO) {
+                userProfileRepository.findByUserId(ObjectId(userId))
+            } ?: throw UserErrorCode.NOT_FOUND_USER.businessException
 
         user.profileImageFileId = FileGrpcClient.uploadProfile(profileImage.file(), userId)
 
         return UserProfileDto.from(userProfileRepository.save(user))
     }
 }
-    

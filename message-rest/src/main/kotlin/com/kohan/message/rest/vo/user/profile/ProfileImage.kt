@@ -5,5 +5,5 @@ import com.linecorp.armeria.server.annotation.Param
 
 class ProfileImage(
     @Param
-    val profileImage: MultipartFile
+    val profileImage: MultipartFile,
 )

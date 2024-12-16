@@ -13,34 +13,29 @@ class CreateChatRoom(
     @field:Size(max = 20, message = "Please enter a chat room name of no more than 20 characters.")
     @field:NotNull(message = "Please enter a chat room name.")
     val name: String,
-
-    @field:NotNull(message = "Please enter a chat room profile image.")
+    @field:NotBlank(message = "Please enter a chat room profile image.")
     val profileImageFileId: String,
-
     @field:ValidEnum(
         message = "Invalid chat room type. This is not permitted.",
-        enumClass = ChatRoomType::class
+        enumClass = ChatRoomType::class,
     )
-    val type: ChatRoomType,
-
-    @field:NotBlank(message = "Please enter a user list.")
+    val type: String,
+    @field:NotNull(message = "Please enter a user list.")
     val userList: List<String>,
-
     // todo init message vo 추가
     @field:NotNull(message = "Please enter a init message.")
-    val initMessage: InitMessage
+    val initMessage: InitMessage,
 ) {
-    fun toChatRoomCollection(): ChatRoomCollection {
-        return ChatRoomCollection(
+    fun toChatRoomCollection(): ChatRoomCollection =
+        ChatRoomCollection(
             name = name,
             profileImageFileId = ObjectId(profileImageFileId),
-            type = type,
+            type = ChatRoomType.valueOf(type),
             userList = userList.map { ObjectId(it) }.toMutableList(),
         )
-    }
 
-    fun toMessageCollection(chatRoomId: ObjectId): MessageCollection {
-        return MessageCollection(
+    fun toMessageCollection(chatRoomId: ObjectId): MessageCollection =
+        MessageCollection(
             chatRoomId = chatRoomId,
             content = initMessage.content,
             sender = ObjectId(initMessage.sender),
@@ -48,5 +43,4 @@ class CreateChatRoom(
             reactions = mutableListOf(),
             readUsers = mutableListOf(),
         )
-    }
 }

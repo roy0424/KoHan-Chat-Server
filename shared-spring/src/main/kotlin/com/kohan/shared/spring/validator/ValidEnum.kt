@@ -13,4 +13,4 @@ annotation class ValidEnum(
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = [],
     val enumClass: KClass<out Enum<*>>,
-    )
+)

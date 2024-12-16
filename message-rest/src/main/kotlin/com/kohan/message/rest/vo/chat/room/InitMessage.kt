@@ -5,11 +5,7 @@ import jakarta.validation.constraints.NotNull
 
 class InitMessage(
     @field:NotNull(message = "Please enter a content.")
-    var content: Any,
-
+    val content: Any,
     @field:NotBlank(message = "Please enter a sender id.")
-    var sender: String,
-) {
-
-
-}
+    val sender: String,
+)

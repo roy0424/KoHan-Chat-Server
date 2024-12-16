@@ -9,12 +9,13 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserProfileGrpcService(
-    private val userProfileRepository: UserProfileRepository
-): UserProfileServiceGrpcKt.UserProfileServiceCoroutineImplBase() {
+    private val userProfileRepository: UserProfileRepository,
+) : UserProfileServiceGrpcKt.UserProfileServiceCoroutineImplBase() {
     @Transactional
     override suspend fun initUserProfile(request: UserProfileOuterClass.UserProfile): UserProfileOuterClass.UserProfile {
         val userProfile = userProfileRepository.save(UserProfileCollection.to(request))
-        return UserProfileOuterClass.UserProfile.newBuilder()
+        return UserProfileOuterClass.UserProfile
+            .newBuilder()
             .setUserId(userProfile.userId.toHexString())
             .setNickname(userProfile.nickname)
             .setProfileImageFileId(userProfile.profileImageFileId)

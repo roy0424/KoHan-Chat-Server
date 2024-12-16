@@ -11,9 +11,12 @@ import io.netty.util.AttributeKey
 import kotlinx.coroutines.runBlocking
 
 class TokenValidationService(
-    delegate: HttpService
+    delegate: HttpService,
 ) : SimpleDecoratingHttpService(delegate) {
-    override fun serve(ctx: ServiceRequestContext, req: HttpRequest): HttpResponse {
+    override fun serve(
+        ctx: ServiceRequestContext,
+        req: HttpRequest,
+    ): HttpResponse {
         val authorizationHeader = req.headers()["Authorization"]
 
         val token = authorizationHeader?.takeIf { it.startsWith("Bearer ") }?.substringAfter("Bearer ")

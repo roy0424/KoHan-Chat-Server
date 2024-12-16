@@ -8,9 +8,6 @@ class UpdateChatRoomProfileImage(
     @Param
     @field:NotBlank(message = "Please enter a chat room id.")
     val chatRoomId: String,
-
     @Param
-    val profileImage: MultipartFile
-) {
-
-}
+    val profileImage: MultipartFile,
+)

@@ -8,16 +8,18 @@ import io.github.cdimascio.dotenv.dotenv
 object AuthenticationGrpcClient {
     val port = dotenv()["AUTHENTICATION_PORT"]
 
-    private val client = GrpcClients.newClient(
-        "gproto+http://localhost:$port/grpc/v1/",
-        AuthenticationServiceGrpcKt.AuthenticationServiceCoroutineStub::class.java,
-    )
+    private val client =
+        GrpcClients.newClient(
+            "gproto+http://localhost:$port/grpc/v1/",
+            AuthenticationServiceGrpcKt.AuthenticationServiceCoroutineStub::class.java,
+        )
 
-    suspend fun authenticateUser(token: String): String {
-        return client.authenticateUser(
-            Authentication.UserToken.newBuilder()
-                .setToken(token)
-                .build()
-        ).userId
-    }
+    suspend fun authenticateUser(token: String): String =
+        client
+            .authenticateUser(
+                Authentication.UserToken
+                    .newBuilder()
+                    .setToken(token)
+                    .build(),
+            ).userId
 }

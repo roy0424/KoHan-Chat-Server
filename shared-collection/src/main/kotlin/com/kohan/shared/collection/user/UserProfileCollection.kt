@@ -17,7 +17,7 @@ data class UserProfileCollection(
     var profileImageFileId: String,
     /** User status message */
     var statusMessage: String? = null,
-): BaseCollection() {
+) : BaseCollection() {
     companion object {
         fun to(request: UserProfileOuterClass.UserProfile): UserProfileCollection =
             UserProfileCollection(
