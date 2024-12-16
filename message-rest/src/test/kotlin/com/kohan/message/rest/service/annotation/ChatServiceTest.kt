@@ -27,7 +27,6 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDateTime
@@ -35,7 +34,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @SpringBootTest
-@EnableAutoConfiguration
 @AutoConfigureDataMongo
 class ChatServiceTest
     @Autowired
@@ -43,7 +41,6 @@ class ChatServiceTest
         private val chatService: ChatService,
         private val chatRoomRepository: ChatRoomRepository,
         private val messageRepository: MessageRepository,
-        private val customMessageRepository: CustomMessageRepository,
     ) {
         private lateinit var ctx: ServiceRequestContext
         private lateinit var userId: ObjectId
