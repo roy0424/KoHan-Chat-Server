@@ -26,6 +26,9 @@ jobs:
         distribution: 'temurin'
         java-version: ${{ matrix.java-version }}
 
+    - name: Install libssl (required for Embedded MongoDB)
+      run: sudo apt-get update && sudo apt-get install -y libssl1.1
+
     - name: Cache Gradle packages
       uses: actions/cache@v3
       with:
