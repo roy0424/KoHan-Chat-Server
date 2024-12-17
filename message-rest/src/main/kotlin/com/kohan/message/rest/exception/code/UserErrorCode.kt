@@ -82,6 +82,6 @@ enum class UserErrorCode(
         BusinessException(
             HttpStatus.BAD_REQUEST,
             mapOf("code" to "USER_013", "message" to "User not request user"),
-        )
-    )
+        ),
+    ),
 }

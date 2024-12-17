@@ -24,27 +24,31 @@ import org.springframework.validation.annotation.Validated
 @ExceptionHandler(MismatchedInputExceptionHandler::class)
 class FriendService(
     private val friendRepository: FriendRepository,
-    private val userProfileRepository: UserProfileRepository
+    private val userProfileRepository: UserProfileRepository,
 ) {
     @Post("/create")
     fun createFriend(
         @Valid
         req: CreateFriendRequest,
-        ctx: ServiceRequestContext
+        ctx: ServiceRequestContext,
     ): UserProfileDto {
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
 
         validateRequestUser(ObjectId(userId), ObjectId(req.userId))
 
-        val friend = userProfileRepository.findByUserId(ObjectId(req.friendId))
-            ?: throw UserErrorCode.NOT_FOUND_USER.businessException
+        val friend =
+            userProfileRepository.findByUserId(ObjectId(req.friendId))
+                ?: throw UserErrorCode.NOT_FOUND_USER.businessException
 
         friendRepository.save(req.toFriendCollection(userId, req.friendId))
 
         return UserProfileDto.from(friend)
     }
 
-    private fun validateRequestUser(userId: ObjectId, reqUserId: ObjectId) {
+    private fun validateRequestUser(
+        userId: ObjectId,
+        reqUserId: ObjectId,
+    ) {
         if (userId != reqUserId) {
             throw UserErrorCode.USER_NOT_REQ_USER.businessException
         }

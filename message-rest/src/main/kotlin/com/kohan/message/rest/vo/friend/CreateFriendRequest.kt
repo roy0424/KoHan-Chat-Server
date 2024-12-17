@@ -9,12 +9,15 @@ class CreateFriendRequest(
     @field:NotNull(message = "Please enter a user ID.")
     val userId: String,
     @field:NotNull(message = "Please enter a friend ID.")
-    val friendId: String
+    val friendId: String,
 ) {
-    fun toFriendCollection(userId: String, friendId: String): FriendCollection =
+    fun toFriendCollection(
+        userId: String,
+        friendId: String,
+    ): FriendCollection =
         FriendCollection(
             fromUserId = ObjectId(userId),
             toUserId = ObjectId(friendId),
-            status = FriendStatus.NORMAL
+            status = FriendStatus.NORMAL,
         )
 }

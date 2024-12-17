@@ -11,5 +11,5 @@ class FriendCollection(
     /** 친구 요청을 보낸 유저 ID */
     var toUserId: ObjectId,
     /** 친구 상태 */
-    var status: FriendStatus
-): BaseCollection()
+    var status: FriendStatus,
+) : BaseCollection()
