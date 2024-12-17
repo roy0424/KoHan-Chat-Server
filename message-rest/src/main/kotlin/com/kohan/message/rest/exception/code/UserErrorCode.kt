@@ -78,4 +78,10 @@ enum class UserErrorCode(
             mapOf("code" to "USER_012", "message" to "Not found reaction with condition"),
         ),
     ),
+    USER_NOT_REQ_USER(
+        BusinessException(
+            HttpStatus.BAD_REQUEST,
+            mapOf("code" to "USER_013", "message" to "User not request user"),
+        )
+    )
 }

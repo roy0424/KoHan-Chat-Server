@@ -1,6 +1,6 @@
 package com.kohan.message.rest.vo.message
 
-import com.kohan.shared.enum.message.item.ReactionType
+import com.kohan.shared.collection.message.item.ReactionType
 import com.kohan.shared.spring.validator.ValidEnum
 import jakarta.validation.constraints.NotBlank
 

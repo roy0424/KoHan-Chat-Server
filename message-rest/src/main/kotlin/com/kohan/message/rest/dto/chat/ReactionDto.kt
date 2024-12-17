@@ -1,6 +1,6 @@
-package com.kohan.message.rest.dto
+package com.kohan.message.rest.dto.chat
 
-import com.kohan.shared.enum.message.item.ReactionType
+import com.kohan.shared.collection.message.item.ReactionType
 
 class ReactionDto(
     var senderUser: String,

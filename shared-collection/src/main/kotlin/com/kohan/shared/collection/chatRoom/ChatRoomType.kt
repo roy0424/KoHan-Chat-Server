@@ -1,4 +1,4 @@
-package com.kohan.shared.enum.chatRoom
+package com.kohan.shared.collection.chatRoom
 
 enum class ChatRoomType {
     GROUP,

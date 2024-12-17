@@ -2,7 +2,7 @@ package com.kohan.message.rest.vo.chat.room
 
 import com.kohan.shared.collection.chatRoom.ChatRoomCollection
 import com.kohan.shared.collection.message.MessageCollection
-import com.kohan.shared.enum.chatRoom.ChatRoomType
+import com.kohan.shared.collection.chatRoom.ChatRoomType
 import com.kohan.shared.spring.validator.ValidEnum
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull

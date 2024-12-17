@@ -1,8 +1,8 @@
-package com.kohan.message.rest.dto
+package com.kohan.message.rest.dto.chat
 
 import com.kohan.message.rest.vo.message.LatestMessageInfo
 import com.kohan.shared.collection.chatRoom.ChatRoomCollection
-import com.kohan.shared.enum.chatRoom.ChatRoomType
+import com.kohan.shared.collection.chatRoom.ChatRoomType
 
 class ChatRoomWithLatestMessageInfoDto(
     var id: String,

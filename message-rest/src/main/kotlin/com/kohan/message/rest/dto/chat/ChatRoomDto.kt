@@ -1,7 +1,7 @@
-package com.kohan.message.rest.dto
+package com.kohan.message.rest.dto.chat
 
 import com.kohan.shared.collection.chatRoom.ChatRoomCollection
-import com.kohan.shared.enum.chatRoom.ChatRoomType
+import com.kohan.shared.collection.chatRoom.ChatRoomType
 
 data class ChatRoomDto(
     var id: String,

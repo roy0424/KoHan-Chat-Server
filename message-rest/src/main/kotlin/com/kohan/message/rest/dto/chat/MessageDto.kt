@@ -1,4 +1,4 @@
-package com.kohan.message.rest.dto
+package com.kohan.message.rest.dto.chat
 
 import com.kohan.shared.collection.message.MessageCollection
 

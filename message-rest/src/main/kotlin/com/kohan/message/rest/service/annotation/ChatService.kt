@@ -1,8 +1,8 @@
 package com.kohan.message.rest.service.annotation
 
-import com.kohan.message.rest.dto.ChatRoomDto
-import com.kohan.message.rest.dto.ChatRoomWithLatestMessageInfoDto
-import com.kohan.message.rest.dto.MessageDto
+import com.kohan.message.rest.dto.chat.ChatRoomDto
+import com.kohan.message.rest.dto.chat.ChatRoomWithLatestMessageInfoDto
+import com.kohan.message.rest.dto.chat.MessageDto
 import com.kohan.message.rest.exception.code.UserErrorCode
 import com.kohan.message.rest.repository.chat.room.ChatRoomRepository
 import com.kohan.message.rest.repository.message.CustomMessageRepository
@@ -22,8 +22,8 @@ import com.kohan.message.rest.vo.message.SendMessage
 import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
 import com.kohan.shared.collection.chatRoom.ChatRoomCollection
 import com.kohan.shared.collection.message.item.Reaction
-import com.kohan.shared.enum.chatRoom.ChatRoomType
-import com.kohan.shared.enum.message.item.ReactionType
+import com.kohan.shared.collection.chatRoom.ChatRoomType
+import com.kohan.shared.collection.message.item.ReactionType
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler
 import com.kohan.shared.spring.exception.handler.MismatchedInputExceptionHandler
 import com.linecorp.armeria.server.ServiceRequestContext
@@ -177,7 +177,7 @@ class ChatService(
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
         val chatRoom = getValidChatRoomWithUserId(chatRoomRepository.findById(ObjectId(req.chatRoomId)), userId)
 
-        // todo file grpc uploadChatRoomProfileImage
+        // todo file grpc uploadChatRoomProfileImage or 파일서버에 올리고 아이디 받아오기
 
         // todo kafka 로 메시지 전달
 
