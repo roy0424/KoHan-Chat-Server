@@ -3,6 +3,8 @@ kohan:
     port: ${AUTHENTICATION_PORT}
   push:
     port: ${PUSH_PORT}
+  rest:
+    port: ${REST_PORT}
 
 kafka:
   bootstrap:

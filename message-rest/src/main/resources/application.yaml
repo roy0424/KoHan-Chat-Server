@@ -1,0 +1,14 @@
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+  profiles:
+    include:
+      - mongo
+    active: prod
+
+armeria:
+  ports:
+    - port: ${REST_PORT}
+      protocols:
+        - HTTP

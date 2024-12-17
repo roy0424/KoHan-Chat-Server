@@ -46,6 +46,7 @@ subprojects {
         implementation(rootProject.libs.jackson.module.kotlin)
         implementation(rootProject.libs.dotenv)
 
+        testImplementation(rootProject.libs.mockito.kotlin)
         testImplementation(rootProject.libs.kotlin.test)
         testImplementation(rootProject.libs.kotlin.coroutines.test)
         testImplementation(rootProject.libs.spring.boot.starter.test)

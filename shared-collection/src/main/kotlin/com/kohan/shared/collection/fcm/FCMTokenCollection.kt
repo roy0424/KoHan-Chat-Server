@@ -7,7 +7,7 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document("fcm_tokens")
+@Document(collection = "fcm_tokens")
 data class FCMTokenCollection(
     @Indexed(unique = true)
     val userId: ObjectId,

@@ -22,6 +22,7 @@ firebase-admin = "9.3.0"
 slf4j = "2.0.16"
 dotenv = "6.4.2"
 embed-mongo = "4.16.1"
+mockito-kotlin = "5.4.0"
 
 [libraries.boms-armeria]
 module = "com.linecorp.armeria:armeria-bom"
@@ -190,6 +191,10 @@ version.ref = "embed-mongo"
 [libraries.spring-embed-mongo]
 module = "de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x"
 version.ref = "embed-mongo"
+
+[libraries.mockito-kotlin]
+module = "org.mockito.kotlin:mockito-kotlin"
+version.ref = "mockito-kotlin"
 
 [plugins]
 spring-boot = {id = "org.springframework.boot", version.ref = "spring-boot"}

@@ -22,6 +22,9 @@ dependencies {
                     .get()
                     .name,
         )
+        exclude(
+            module = project(":proto").name,
+        )
     }
     api(project(":shared-collection"))
     api(libs.kotlin.allopen)
@@ -33,7 +36,7 @@ dependencies {
     api(libs.bcprov.jdk18on)
     api(libs.spring.embed.mongo)
 
-    implementation(libs.uap.java)
+    api(libs.uap.java)
 
     testApi(libs.embed.mongo)
     annotationProcessor(libs.spring.boot.configuration.processor)

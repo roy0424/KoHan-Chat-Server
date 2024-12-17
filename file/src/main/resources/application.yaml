@@ -7,6 +7,12 @@ spring:
       - mongo
     active: prod
 
+armeria:
+  ports:
+    - port: ${FILE_PORT}
+      protocols:
+        - HTTP
+
 kohan:
   file:
     savePath: ${FILE_SAVE_PATH}

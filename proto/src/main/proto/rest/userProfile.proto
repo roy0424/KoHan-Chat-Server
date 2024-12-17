@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package com.kohan.proto.rest.v1;
+
+import "google/protobuf/empty.proto";
+
+message UserProfile {
+  string userId = 1;
+  string nickname = 2;
+  string profileImageFileId = 3;
+}
+
+
+service UserProfileService {
+  rpc initUserProfile(UserProfile) returns (UserProfile) {}
+}
