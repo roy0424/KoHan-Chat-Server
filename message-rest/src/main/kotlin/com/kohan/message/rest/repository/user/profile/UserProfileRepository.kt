@@ -8,4 +8,6 @@ interface UserProfileRepository : MongoRepository<UserProfileCollection, ObjectI
     fun save(userProfileCollection: UserProfileCollection): UserProfileCollection
 
     fun findByUserId(userId: ObjectId): UserProfileCollection?
+
+    fun findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(ids: List<ObjectId>): List<UserProfileCollection>
 }

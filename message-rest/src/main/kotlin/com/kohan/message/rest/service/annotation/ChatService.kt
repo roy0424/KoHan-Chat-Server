@@ -64,6 +64,7 @@ class ChatService(
     fun getChatRoomList(
         @Param("page")
         page: Int = 0,
+        @Param("size")
         size: Int = 10,
         ctx: ServiceRequestContext,
     ): Page<ChatRoomWithLatestMessageInfoDto> {
