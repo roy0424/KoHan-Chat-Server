@@ -1,6 +1,5 @@
 package com.kohan.shared.collection.message.item
 
-import com.kohan.shared.enum.message.item.ReactionType
 import org.bson.types.ObjectId
 
 class Reaction(

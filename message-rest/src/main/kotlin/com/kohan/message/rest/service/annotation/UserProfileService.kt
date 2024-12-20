@@ -1,6 +1,6 @@
 package com.kohan.message.rest.service.annotation
 
-import com.kohan.message.rest.dto.UserProfileDto
+import com.kohan.message.rest.dto.chat.UserProfileDto
 import com.kohan.message.rest.exception.code.UserErrorCode
 import com.kohan.message.rest.repository.user.profile.UserProfileRepository
 import com.kohan.message.rest.vo.user.profile.Nickname

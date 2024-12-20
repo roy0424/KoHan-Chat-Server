@@ -1,4 +1,4 @@
-package com.kohan.shared.enum.message.item
+package com.kohan.shared.collection.message.item
 
 enum class ReactionType {
     LIKE,

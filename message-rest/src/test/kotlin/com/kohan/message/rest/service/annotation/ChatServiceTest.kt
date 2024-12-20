@@ -14,9 +14,9 @@ import com.kohan.message.rest.vo.message.DeleteReaction
 import com.kohan.message.rest.vo.message.SendMessage
 import com.kohan.shared.armeria.exception.BusinessException
 import com.kohan.shared.collection.chatRoom.ChatRoomCollection
+import com.kohan.shared.collection.chatRoom.ChatRoomType
 import com.kohan.shared.collection.message.MessageCollection
-import com.kohan.shared.enum.chatRoom.ChatRoomType
-import com.kohan.shared.enum.message.item.ReactionType
+import com.kohan.shared.collection.message.item.ReactionType
 import com.linecorp.armeria.server.ServiceRequestContext
 import io.netty.util.AttributeKey
 import org.bson.types.ObjectId
