@@ -6,6 +6,7 @@ import com.kohan.message.rest.exception.code.UserErrorCode
 import com.kohan.message.rest.repository.friend.FriendRepository
 import com.kohan.message.rest.repository.user.profile.UserProfileRepository
 import com.kohan.message.rest.vo.friend.CreateFriendRequest
+import com.kohan.message.rest.vo.friend.DeleteFriendVo
 import com.kohan.message.rest.vo.friend.FriendStatusVo
 import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
 import com.kohan.shared.collection.friend.FriendStatus
@@ -74,7 +75,29 @@ class FriendService(
         }
     }
 
-    // todo favorite만 조회
+    @Get("/{fromUserId}/favorite")
+    fun getFavoriteFriends(
+        @Param("fromUserId")
+        fromUserId: String,
+        ctx: ServiceRequestContext,
+    ): List<UserProfileDto> {
+        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
+
+        validateRequestUser(ObjectId(userId), ObjectId(fromUserId))
+
+        val friends =
+            friendRepository.findAllByDeleteAtIsNullAndFromUserIdAndStatusIn(
+                ObjectId(fromUserId),
+                listOf(FriendStatus.FAVORITE),
+            )
+
+        val friendIds = friends.map { it.toUserId }
+
+        return userProfileRepository.findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(friendIds).map {
+            UserProfileDto.from(it)
+        }
+    }
+
     @Post("/status")
     fun updateFriendStatus(
         @Valid
@@ -89,6 +112,25 @@ class FriendService(
         friend.status = FriendStatus.valueOf(friendStatusVo.status)
 
         return FriendDto.from(friendRepository.save(friend))
+    }
+
+    @Post("/delete")
+    fun deleteFriend(
+        @Valid
+        deleteFriendVo: DeleteFriendVo,
+        ctx: ServiceRequestContext,
+    ) {
+        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
+
+        val friend =
+            friendRepository.findById(ObjectId(deleteFriendVo.id)).orElseThrow {
+                UserErrorCode.NOT_FOUND_FRIEND.businessException
+            }
+
+        validateRequestUser(ObjectId(userId), friend.fromUserId)
+
+        friend.delete()
+        friendRepository.save(friend)
     }
 
     private fun validateRequestUser(

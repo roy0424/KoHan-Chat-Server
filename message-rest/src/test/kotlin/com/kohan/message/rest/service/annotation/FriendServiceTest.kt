@@ -4,6 +4,7 @@ import com.kohan.message.rest.exception.code.UserErrorCode
 import com.kohan.message.rest.repository.friend.FriendRepository
 import com.kohan.message.rest.repository.user.profile.UserProfileRepository
 import com.kohan.message.rest.vo.friend.CreateFriendRequest
+import com.kohan.message.rest.vo.friend.DeleteFriendVo
 import com.kohan.message.rest.vo.friend.FriendStatusVo
 import com.kohan.shared.armeria.exception.BusinessException
 import com.kohan.shared.collection.friend.FriendCollection
@@ -19,13 +20,16 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Optional
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @ExtendWith(MockitoExtension::class)
 class FriendServiceTest {
@@ -176,5 +180,106 @@ class FriendServiceTest {
             }
 
         assertEquals(UserErrorCode.USER_NOT_REQ_USER.businessException, exception)
+    }
+
+    @Test
+    fun `getFavoriteFriends should return sorted favorite friends`() {
+        val friends =
+            listOf(
+                FriendCollection(userId, ObjectId(), FriendStatus.FAVORITE),
+                FriendCollection(userId, ObjectId(), FriendStatus.FAVORITE),
+            )
+        val toUserIds = friends.map { it.toUserId }
+        val userProfiles =
+            listOf(
+                UserProfileCollection(toUserIds[1], "Alice", "1234"),
+                UserProfileCollection(toUserIds[0], "Han", "1234"),
+            )
+
+        whenever(
+            friendRepository.findAllByDeleteAtIsNullAndFromUserIdAndStatusIn(
+                eq(userId),
+                eq(listOf(FriendStatus.FAVORITE)),
+            ),
+        ).thenReturn(friends)
+
+        whenever(userProfileRepository.findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(toUserIds))
+            .thenReturn(userProfiles.sortedBy { it.nickname })
+
+        val result = friendService.getFavoriteFriends(userId.toHexString(), ctx)
+
+        assertEquals(2, result.size)
+        assertEquals("Alice", result[0].nickname)
+        assertEquals("Han", result[1].nickname)
+
+        verify(friendRepository).findAllByDeleteAtIsNullAndFromUserIdAndStatusIn(
+            eq(userId),
+            eq(listOf(FriendStatus.FAVORITE)),
+        )
+        verify(userProfileRepository).findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(toUserIds)
+    }
+
+    @Test
+    fun `getFavoriteFriends should throw exception if user validation fails`() {
+        val exception =
+            assertThrows<BusinessException> {
+                friendService.getFavoriteFriends(otherUserId.toHexString(), ctx)
+            }
+
+        assertEquals(UserErrorCode.USER_NOT_REQ_USER.businessException, exception)
+    }
+
+    @Test
+    fun `deleteFriend should delete friend`() {
+        val deleteFriendVo = DeleteFriendVo(ObjectId().toHexString())
+        val friend = FriendCollection(userId, otherUserId, FriendStatus.NORMAL)
+
+        whenever(friendRepository.findById(ObjectId(deleteFriendVo.id)))
+            .thenReturn(Optional.of(friend))
+
+        friend.delete()
+        whenever(friendRepository.save(friend))
+            .thenReturn(friend)
+
+        friendService.deleteFriend(deleteFriendVo, ctx)
+
+        assertNotNull(friend.deleteAt)
+        verify(friendRepository).findById(ObjectId(deleteFriendVo.id))
+        verify(friendRepository).save(friend)
+    }
+
+    @Test
+    fun `deleteFriend should throw exception if friend not found`() {
+        val deleteFriendVo = DeleteFriendVo(ObjectId().toHexString())
+
+        whenever(friendRepository.findById(ObjectId(deleteFriendVo.id)))
+            .thenReturn(Optional.empty())
+
+        val exception =
+            assertThrows<BusinessException> {
+                friendService.deleteFriend(deleteFriendVo, ctx)
+            }
+
+        assertEquals(UserErrorCode.NOT_FOUND_FRIEND.businessException, exception)
+        verify(friendRepository).findById(ObjectId(deleteFriendVo.id))
+        verify(friendRepository, never()).save(any())
+    }
+
+    @Test
+    fun `deleteFriend should throw exception if user is not the friend owner`() {
+        val deleteFriendVo = DeleteFriendVo(ObjectId().toHexString())
+        val friend = FriendCollection(ObjectId(), ObjectId(), FriendStatus.NORMAL) // Different user ID
+
+        whenever(friendRepository.findById(ObjectId(deleteFriendVo.id)))
+            .thenReturn(Optional.of(friend))
+
+        val exception =
+            assertThrows<BusinessException> {
+                friendService.deleteFriend(deleteFriendVo, ctx)
+            }
+
+        assertEquals(UserErrorCode.USER_NOT_REQ_USER.businessException, exception)
+        verify(friendRepository).findById(ObjectId(deleteFriendVo.id))
+        verify(friendRepository, never()).save(any())
     }
 }
