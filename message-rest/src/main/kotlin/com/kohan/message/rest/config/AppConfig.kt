@@ -4,7 +4,6 @@ import com.kohan.message.rest.service.annotation.ChatService
 import com.kohan.message.rest.service.annotation.FriendService
 import com.kohan.message.rest.service.annotation.UserProfileService
 import com.kohan.message.rest.service.grpc.UserProfileGrpcService
-import com.linecorp.armeria.server.HttpService
 import com.linecorp.armeria.server.docs.DocService
 import com.linecorp.armeria.server.grpc.GrpcService
 import com.linecorp.armeria.server.logging.AccessLogWriter
@@ -20,7 +19,7 @@ class AppConfig {
         userProfileService: UserProfileService,
         userProfileGrpcService: UserProfileGrpcService,
         chatService: ChatService,
-        friendService: FriendService
+        friendService: FriendService,
     ): ArmeriaServerConfigurator =
         ArmeriaServerConfigurator { serverBuilder ->
             serverBuilder.annotatedService("/api/user-profile", userProfileService).decorator { delegate ->

@@ -1,7 +1,6 @@
 package com.kohan.authentication.dto
 
 import com.kohan.shared.collection.user.item.TokenInfo
-import java.time.LocalDateTime
 
 class TokenDto(
     var token: String,

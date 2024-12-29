@@ -12,7 +12,6 @@ import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
 import com.kohan.shared.collection.friend.FriendStatus
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler
 import com.kohan.shared.spring.exception.handler.MismatchedInputExceptionHandler
-import com.kohan.shared.spring.validator.ValidEnum
 import com.linecorp.armeria.server.ServiceRequestContext
 import com.linecorp.armeria.server.annotation.ExceptionHandler
 import com.linecorp.armeria.server.annotation.Get
@@ -45,15 +44,16 @@ class FriendService(
 
         validateRequestUser(ObjectId(userId), ObjectId(req.userId))
 
-        friendRepository.findByDeleteAtIsNullAndFromUserIdAndToUserId(
-            ObjectId(userId),
-            ObjectId(req.friendId),
-        )?.let {
-            throw UserErrorCode.ALREADY_FRIEND.businessException
-        }
+        friendRepository
+            .findByDeleteAtIsNullAndFromUserIdAndToUserId(
+                ObjectId(userId),
+                ObjectId(req.friendId),
+            )?.let {
+                throw UserErrorCode.ALREADY_FRIEND.businessException
+            }
 
         val friend =
-            userProfileRepository.findByUserId(ObjectId(req.friendId))?: throw UserErrorCode.NOT_FOUND_USER.businessException
+            userProfileRepository.findByUserId(ObjectId(req.friendId)) ?: throw UserErrorCode.NOT_FOUND_USER.businessException
 
         friendRepository.save(req.toFriendCollection(userId, req.friendId))
 
