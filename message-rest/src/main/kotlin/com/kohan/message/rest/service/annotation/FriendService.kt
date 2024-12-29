@@ -12,11 +12,13 @@ import com.kohan.shared.armeria.exception.handler.BusinessExceptionHandler
 import com.kohan.shared.collection.friend.FriendStatus
 import com.kohan.shared.spring.exception.handler.ConstraintViolationExceptionHandler
 import com.kohan.shared.spring.exception.handler.MismatchedInputExceptionHandler
+import com.kohan.shared.spring.validator.ValidEnum
 import com.linecorp.armeria.server.ServiceRequestContext
 import com.linecorp.armeria.server.annotation.ExceptionHandler
 import com.linecorp.armeria.server.annotation.Get
 import com.linecorp.armeria.server.annotation.Param
 import com.linecorp.armeria.server.annotation.Post
+import com.linecorp.armeria.server.annotation.ProducesJson
 import io.netty.util.AttributeKey
 import jakarta.validation.Valid
 import org.bson.types.ObjectId
@@ -33,6 +35,7 @@ class FriendService(
     private val userProfileRepository: UserProfileRepository,
 ) {
     @Post("/create")
+    @ProducesJson
     fun createFriend(
         @Valid
         req: CreateFriendRequest,
@@ -42,10 +45,15 @@ class FriendService(
 
         validateRequestUser(ObjectId(userId), ObjectId(req.userId))
 
+        friendRepository.findByDeleteAtIsNullAndFromUserIdAndToUserId(
+            ObjectId(userId),
+            ObjectId(req.friendId),
+        )?.let {
+            throw UserErrorCode.ALREADY_FRIEND.businessException
+        }
+
         val friend =
-            userProfileRepository.findById(ObjectId(req.friendId)).orElseThrow {
-                UserErrorCode.NOT_FOUND_USER.businessException
-            }
+            userProfileRepository.findByUserId(ObjectId(req.friendId))?: throw UserErrorCode.NOT_FOUND_USER.businessException
 
         friendRepository.save(req.toFriendCollection(userId, req.friendId))
 
@@ -53,9 +61,12 @@ class FriendService(
     }
 
     @Get("/{fromUserId}")
+    @ProducesJson
     fun getFriends(
         @Param("fromUserId")
         fromUserId: String,
+        @Param("status")
+        status: List<FriendStatus>,
         ctx: ServiceRequestContext,
     ): List<UserProfileDto> {
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
@@ -65,40 +76,18 @@ class FriendService(
         val friends =
             friendRepository.findAllByDeleteAtIsNullAndFromUserIdAndStatusIn(
                 ObjectId(fromUserId),
-                listOf(FriendStatus.NORMAL, FriendStatus.FAVORITE),
+                status,
             )
 
         val friendIds = friends.map { it.toUserId }
 
-        return userProfileRepository.findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(friendIds).map {
-            UserProfileDto.from(it)
-        }
-    }
-
-    @Get("/{fromUserId}/favorite")
-    fun getFavoriteFriends(
-        @Param("fromUserId")
-        fromUserId: String,
-        ctx: ServiceRequestContext,
-    ): List<UserProfileDto> {
-        val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
-
-        validateRequestUser(ObjectId(userId), ObjectId(fromUserId))
-
-        val friends =
-            friendRepository.findAllByDeleteAtIsNullAndFromUserIdAndStatusIn(
-                ObjectId(fromUserId),
-                listOf(FriendStatus.FAVORITE),
-            )
-
-        val friendIds = friends.map { it.toUserId }
-
-        return userProfileRepository.findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(friendIds).map {
+        return userProfileRepository.findAllByUserIdInAndDeleteAtIsNullOrderByNicknameAsc(friendIds).map {
             UserProfileDto.from(it)
         }
     }
 
     @Post("/status")
+    @ProducesJson
     fun updateFriendStatus(
         @Valid
         friendStatusVo: FriendStatusVo,
@@ -115,6 +104,7 @@ class FriendService(
     }
 
     @Post("/delete")
+    @ProducesJson
     fun deleteFriend(
         @Valid
         deleteFriendVo: DeleteFriendVo,

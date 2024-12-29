@@ -17,6 +17,10 @@ class TokenValidationService(
         ctx: ServiceRequestContext,
         req: HttpRequest,
     ): HttpResponse {
+        if (ctx.path().startsWith("/docs") || ctx.path().startsWith("/grpc")) {
+            return unwrap().serve(ctx, req)
+        }
+
         val authorizationHeader = req.headers()["Authorization"]
 
         val token = authorizationHeader?.takeIf { it.startsWith("Bearer ") }?.substringAfter("Bearer ")

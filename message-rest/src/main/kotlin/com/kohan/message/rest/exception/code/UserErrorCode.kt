@@ -90,4 +90,10 @@ enum class UserErrorCode(
             mapOf("code" to "USER_014", "message" to "Not found friend with condition"),
         ),
     ),
+    ALREADY_FRIEND(
+        BusinessException(
+            HttpStatus.BAD_REQUEST,
+            mapOf("code" to "USER_015", "message" to "Already friend"),
+        ),
+    ),
 }

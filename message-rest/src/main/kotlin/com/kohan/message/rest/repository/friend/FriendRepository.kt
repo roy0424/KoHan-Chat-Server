@@ -10,4 +10,9 @@ interface FriendRepository : MongoRepository<FriendCollection, ObjectId> {
         fromUserId: ObjectId,
         status: List<FriendStatus>,
     ): List<FriendCollection>
+
+    fun findByDeleteAtIsNullAndFromUserIdAndToUserId(
+        fromUserId: ObjectId,
+        toUserId: ObjectId,
+    ): FriendCollection?
 }

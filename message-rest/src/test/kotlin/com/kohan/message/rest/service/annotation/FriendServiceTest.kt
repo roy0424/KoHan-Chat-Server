@@ -125,10 +125,10 @@ class FriendServiceTest {
             ),
         ).thenReturn(friends)
 
-        whenever(userProfileRepository.findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(toUserIds))
+        whenever(userProfileRepository.findAllByUserIdInAndDeleteAtIsNullOrderByNicknameAsc(toUserIds))
             .thenReturn(userProfiles.sortedBy { it.nickname })
 
-        val result = friendService.getFriends(userId.toHexString(), ctx)
+        val result = friendService.getFriends(userId.toHexString(), listOf(FriendStatus.NORMAL, FriendStatus.FAVORITE),ctx)
 
         assertEquals(2, result.size)
         assertEquals("Alice", result[0].nickname)
@@ -138,14 +138,14 @@ class FriendServiceTest {
             eq(userId),
             eq(listOf(FriendStatus.NORMAL, FriendStatus.FAVORITE)),
         )
-        verify(userProfileRepository).findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(toUserIds)
+        verify(userProfileRepository).findAllByUserIdInAndDeleteAtIsNullOrderByNicknameAsc(toUserIds)
     }
 
     @Test
     fun `getFriends should throw exception if user validation fails`() {
         val exception =
             assertThrows<BusinessException> {
-                friendService.getFriends(otherUserId.toHexString(), ctx)
+                friendService.getFriends(otherUserId.toHexString(),listOf(FriendStatus.NORMAL, FriendStatus.FAVORITE), ctx)
             }
 
         assertEquals(UserErrorCode.USER_NOT_REQ_USER.businessException, exception)
@@ -177,53 +177,6 @@ class FriendServiceTest {
         val exception =
             assertThrows<BusinessException> {
                 friendService.updateFriendStatus(friendStatusVo, ctx)
-            }
-
-        assertEquals(UserErrorCode.USER_NOT_REQ_USER.businessException, exception)
-    }
-
-    @Test
-    fun `getFavoriteFriends should return sorted favorite friends`() {
-        val friends =
-            listOf(
-                FriendCollection(userId, ObjectId(), FriendStatus.FAVORITE),
-                FriendCollection(userId, ObjectId(), FriendStatus.FAVORITE),
-            )
-        val toUserIds = friends.map { it.toUserId }
-        val userProfiles =
-            listOf(
-                UserProfileCollection(toUserIds[1], "Alice", "1234"),
-                UserProfileCollection(toUserIds[0], "Han", "1234"),
-            )
-
-        whenever(
-            friendRepository.findAllByDeleteAtIsNullAndFromUserIdAndStatusIn(
-                eq(userId),
-                eq(listOf(FriendStatus.FAVORITE)),
-            ),
-        ).thenReturn(friends)
-
-        whenever(userProfileRepository.findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(toUserIds))
-            .thenReturn(userProfiles.sortedBy { it.nickname })
-
-        val result = friendService.getFavoriteFriends(userId.toHexString(), ctx)
-
-        assertEquals(2, result.size)
-        assertEquals("Alice", result[0].nickname)
-        assertEquals("Han", result[1].nickname)
-
-        verify(friendRepository).findAllByDeleteAtIsNullAndFromUserIdAndStatusIn(
-            eq(userId),
-            eq(listOf(FriendStatus.FAVORITE)),
-        )
-        verify(userProfileRepository).findAllByIdInAndDeleteAtIsNullOrderByNicknameAsc(toUserIds)
-    }
-
-    @Test
-    fun `getFavoriteFriends should throw exception if user validation fails`() {
-        val exception =
-            assertThrows<BusinessException> {
-                friendService.getFavoriteFriends(otherUserId.toHexString(), ctx)
             }
 
         assertEquals(UserErrorCode.USER_NOT_REQ_USER.businessException, exception)

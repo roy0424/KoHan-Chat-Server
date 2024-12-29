@@ -1,6 +1,7 @@
 package com.kohan.message.rest.config
 
 import com.kohan.message.rest.service.annotation.ChatService
+import com.kohan.message.rest.service.annotation.FriendService
 import com.kohan.message.rest.service.annotation.UserProfileService
 import com.kohan.message.rest.service.grpc.UserProfileGrpcService
 import com.linecorp.armeria.server.HttpService
@@ -19,12 +20,16 @@ class AppConfig {
         userProfileService: UserProfileService,
         userProfileGrpcService: UserProfileGrpcService,
         chatService: ChatService,
+        friendService: FriendService
     ): ArmeriaServerConfigurator =
         ArmeriaServerConfigurator { serverBuilder ->
-            serverBuilder.annotatedService("/api/user-profile", userProfileService).decorator { delegate: HttpService ->
+            serverBuilder.annotatedService("/api/user-profile", userProfileService).decorator { delegate ->
                 TokenValidationService(delegate)
             }
-            serverBuilder.annotatedService("/api/chat", chatService).decorator { delegate: HttpService ->
+            serverBuilder.annotatedService("/api/chat", chatService).decorator { delegate ->
+                TokenValidationService(delegate)
+            }
+            serverBuilder.annotatedService("/api/friend", friendService).decorator { delegate ->
                 TokenValidationService(delegate)
             }
             serverBuilder.service(

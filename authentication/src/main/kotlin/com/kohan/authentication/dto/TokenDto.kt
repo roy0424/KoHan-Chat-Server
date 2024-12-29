@@ -5,15 +5,15 @@ import java.time.LocalDateTime
 
 class TokenDto(
     var token: String,
-    var expiresAt: LocalDateTime,
-    var issuanceDate: LocalDateTime,
+    var expiresAt: String,
+    var issuanceDate: String,
 ) {
     companion object {
         fun from(tokenInfo: TokenInfo): TokenDto =
             TokenDto(
                 token = tokenInfo.token,
-                expiresAt = tokenInfo.expirationDate,
-                issuanceDate = tokenInfo.issuanceDate,
+                expiresAt = tokenInfo.expirationDate.toString(),
+                issuanceDate = tokenInfo.issuanceDate.toString(),
             )
     }
 }
