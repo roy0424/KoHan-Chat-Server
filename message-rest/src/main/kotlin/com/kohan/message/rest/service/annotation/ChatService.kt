@@ -72,7 +72,7 @@ class ChatService(
         // 최적화 필요
         val userId: String = ctx.attr(AttributeKey.valueOf("userId"))!!
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("latestMessage.createAt")))
-        val chatRoomList = chatRoomRepository.findByUserListContainsAndDeleteAtNotNull(ObjectId(userId), pageable)
+        val chatRoomList = chatRoomRepository.findAllByUserListContainsAndDeleteAtIsNull(ObjectId(userId), pageable)
 
         val chatRoomWithLatestMessageInfoList =
             chatRoomList.map { chatRoom ->
@@ -114,7 +114,7 @@ class ChatService(
         }
 
         val messageList =
-            messageRepository.findByChatRoomIdAndDeletedAtNotNullAndIdGreaterThanOrderByIdAsc(ObjectId(chatRoomId), ObjectId(messageId))
+            messageRepository.findAllByChatRoomIdAndDeleteAtIsNullAndIdGreaterThanOrderByIdAsc(ObjectId(chatRoomId), ObjectId(messageId))
 
         return transformList(messageList) { MessageDto.from(it) }
     }

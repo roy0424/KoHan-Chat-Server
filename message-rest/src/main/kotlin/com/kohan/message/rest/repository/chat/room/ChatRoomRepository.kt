@@ -10,8 +10,8 @@ import org.springframework.data.mongodb.repository.Query
 interface ChatRoomRepository : MongoRepository<ChatRoomCollection, ObjectId> {
     fun save(chatRoomCollection: ChatRoomCollection): ChatRoomCollection
 
-    @Query("{ 'userList': ?0 }")
-    fun findByUserListContainsAndDeleteAtNotNull(
+    @Query("{ 'userList': ?0, deleteAt: null }")
+    fun findAllByUserListContainsAndDeleteAtIsNull(
         userId: ObjectId,
         pageable: Pageable,
     ): Page<ChatRoomCollection>

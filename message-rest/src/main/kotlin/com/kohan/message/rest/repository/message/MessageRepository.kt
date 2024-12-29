@@ -6,8 +6,8 @@ import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Query
 
 interface MessageRepository : MongoRepository<MessageCollection, ObjectId> {
-    @Query("{ chatRoomId: ?0, '_id': { \$gt: ?1 } }")
-    fun findByChatRoomIdAndDeletedAtNotNullAndIdGreaterThanOrderByIdAsc(
+    @Query("{ chatRoomId: ?0, deleteAt: null, '_id': { \$gt: ?1 } }")
+    fun findAllByChatRoomIdAndDeleteAtIsNullAndIdGreaterThanOrderByIdAsc(
         chatRoomId: ObjectId,
         messageId: ObjectId,
     ): List<MessageCollection>
